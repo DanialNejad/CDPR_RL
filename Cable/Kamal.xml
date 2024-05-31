@@ -1,0 +1,63 @@
+<mujoco>
+  <option gravity="0 0 -9.81" />
+  <worldbody>
+    <geom type="plane" size="10 10 0.1" />
+    <light pos="0 0 10" />
+    <site name="anchor0" pos="0 0 5" size="0.03" rgba="0 0 1 1" />
+    <site name="anchor1" pos="3.5 3.5 5" size="0.03" rgba="0 0 1 1" />
+    <site name="anchor2" pos="3.5 -3.5 5" size="0.03" rgba="0 0 1 1" />
+    <site name="anchor3" pos="-3.5 3.5 5" size="0.03" rgba="0 0 1 1" />
+    <site name="anchor4" pos="-3.5 -3.5 5" size="0.03" rgba="0 0 1 1" />
+    <body name="box" pos="0 0 2">
+      <freejoint />
+      <geom type="box" mass="5" size=".5 .5 .02" rgba="0.8 0.8 0.8 0.3"/>
+      <site name="a1" pos=".5 .5 .02" rgba="0 0 1 1" size="0.03" />
+      <site name="a2" pos=".5 -.5 .02" rgba="0 0 1 1" size="0.03" />
+      <site name="a3" pos="-.5 .5 .02" rgba="0 0 1 1" size="0.03" />
+      <site name="a4" pos="-.5 -.5 .02" rgba="0 0 1 1" size="0.03" />
+    </body>
+  </worldbody>
+ 
+
+
+
+
+  
+  
+
+  <tendon>
+    <spatial name="tendon1" limited="true" range="0 10" damping="100" stiffness="10000" >
+      <site site="anchor1" />
+      <site site="a1" />
+    </spatial>
+    <spatial name="tendon2" limited="true" range="0 10" damping="100" stiffness="10000" >
+      <site site="anchor2" />
+      <site site="a2" />
+    </spatial>
+    <spatial name="tendon3" limited="true" range="0 10" damping="100" stiffness="10000" >
+      <site site="anchor3" />
+      <site site="a3" />
+    </spatial>
+    <spatial name="tendon4" limited="true" range="0 10" damping="100" stiffness="10000" >
+      <site site="anchor4" />
+      <site site="a4" />
+    </spatial>
+  </tendon>
+  <actuator>
+    <!-- <motor name="tendon11" tendon="tendon1" ctrllimited="true" ctrlrange="-6 2" gear="4" />
+    <motor name="tendon22" tendon="tendon2" ctrllimited="true" ctrlrange="-6 2" gear="4" />
+    <motor name="tendon33" tendon="tendon3" ctrllimited="true" ctrlrange="-6 2" gear="4" />
+    <motor name="tendon44" tendon="tendon4" ctrllimited="true" ctrlrange="-6 2" gear="4" /> -->
+    <position name="tendon1" tendon="tendon1" ctrllimited="true" ctrlrange="-20 20" kp="1000"/>
+    <position name="tendon2" tendon="tendon2" ctrllimited="true" ctrlrange="-20 20" kp="1000"/>
+    <position name="tendon3" tendon="tendon3" ctrllimited="true" ctrlrange="-20 20" kp="1000"/>
+    <position name="tendon4" tendon="tendon4" ctrllimited="true" ctrlrange="-20 20" kp="1000"/>
+  </actuator>
+
+  <sensor>
+    <tendonlimitfrc tendon="tendon1" />
+    <tendonlimitfrc tendon="tendon2" />
+    <tendonlimitfrc tendon="tendon3" />
+    <tendonlimitfrc tendon="tendon4" />
+  </sensor>
+</mujoco>

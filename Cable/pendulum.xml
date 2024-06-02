@@ -1,0 +1,41 @@
+<mujoco model="tendon_pendulum">
+    <compiler angle="degree"/>
+    <option gravity="0 0 -9.81"/>
+
+    <worldbody>
+        <light diffuse=".5 .5 .5" pos="0 0 5" dir="0 0 -1"/>
+        <geom type="plane" size="2 2 0.1" rgba="1 1 1 1"/>
+        <!-- Fixed base of the pendulum -->
+        <body name="base" pos="0 0 1">
+            <geom type="sphere" size="0.01" rgba="1 0 0 1" />
+            <joint name="j1" type="hinge" pos="0 0 0" axis="0 1 0" limited="true" range="-180 180" />
+            <site name="base_site" pos="0 0 0" size="0.01" rgba="1 0 0 1" />
+        </body>
+
+        <!-- Pendulum body -->
+        <body name="pendulum" pos="0 0.5 0.5">
+            <geom type="sphere"  size="0.05" rgba="0.8 0.2 0.2 1" mass="5"/>
+            <joint name="j2" type="hinge" pos="0 0 0" axis="0 1 0" limited="true" range="-180 180" />
+            <site name="pendulum_site" pos="0 0 0" size="0.01" rgba="0.2 0.2 0.8 1" />
+        </body>
+    </worldbody>
+
+    <tendon>
+        <!-- Tendon representing the cable -->
+        <spatial name="cable">
+            <site site="base_site" />
+            <site site="pendulum_site" />
+        </spatial>
+    </tendon>
+
+    <actuator>
+        <motor tendon="cable" ctrlrange="-1 1" />
+    </actuator>
+
+    <sensor>
+        <!-- Sensor for the joint angle (theta) -->
+        <jointpos joint="j1" />
+        <!-- Sensor for the joint angular velocity (theta dot) -->
+        <jointvel joint="j1" />
+    </sensor>
+</mujoco>

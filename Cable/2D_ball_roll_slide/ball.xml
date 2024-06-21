@@ -1,0 +1,19 @@
+<mujoco>
+	<option gravity = " 0 0 -9.81" />
+	<asset>
+		<material name="floor" texture="checks1" texrepeat="2 2" texuniform="true"/>
+		<texture name="checks1" builtin="checker" type='2d' width='256' height='256' rgb1="1 1 1" rgb2="0 0 0" />
+		<material name="object" texture="checks2" texrepeat="2 2" texuniform="true"/>
+		<texture name="checks2" builtin="checker" type='2d' width='256' height='256' rgb1="1 0 0" rgb2="0 1 0" />
+	</asset>
+	<worldbody>
+        <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
+		<geom type="plane" size="100 1 0.1" material="floor"/>
+		<body pos="0 0 0.1">
+			<joint type="slide" axis="1 0 0"/>
+			<joint type="slide" axis="0 0 1"/>
+			<joint type="hinge" axis="0 -1 0"/>
+			<geom type="sphere" size=".1" material="object" />
+		</body>
+	</worldbody>
+</mujoco>

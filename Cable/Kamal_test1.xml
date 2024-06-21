@@ -28,15 +28,18 @@
         <site name="u2" pos="-0.95 0.03 2"/>
 
         <body name="ee" pos="0 0.03 1.1">
-            <freejoint/>
-            <geom name="p1" type="cylinder" size="0.005 0.03" euler="90 0 0" rgba="0.5 0.5 0.5 1"/>
+            <!-- <freejoint/> -->
+            <joint name="slide_x" type="slide" axis="1 0 0"/>
+            <joint name="slide_y" type="slide" axis="0 1 0"/>
+            <joint name="slide_z" type="slide" axis="0 0 1"/>
+            <geom name="p1" type="cylinder" size="0.01 0.03" euler="90 0 0" rgba="1 0 0 1"/>
             <site name="side1" pos="0 0 -0.03"/>
         </body>
 
     </worldbody>
 
     <tendon>
-        <spatial name="tendon1" width=".001" damping="0.0001" stiffness="0.1">
+        <spatial name="tendon1" width=".001" damping="1" stiffness="100">
             <site site="u1"/>
             <geom geom="p1" sidesite="side1"/>
             <site site="u2"/>
@@ -47,8 +50,8 @@
         <connect name="rim_b_j" body1="ee"  anchor="0 0.03 1.095"/>
     </equality> -->
 
-    <!-- <actuator>
+    <actuator>
         <motor name="tendon1" tendon="tendon1" ctrlrange="-200 200"/>
-        <position name="tendon1" tendon="tendon1" ctrllimited="true" ctrlrange="-20 20" kp="1000"/>
-    </actuator> -->
+        <!-- <position name="tendon1" tendon="tendon1" ctrllimited="true" ctrlrange="-20 20" kp="1000"/> -->
+    </actuator>
 </mujoco>

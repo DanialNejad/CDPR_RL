@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<mujoco model="scene3">
+    <compiler angle="radian" coordinate="local"/>
+    <option timestep="0.001" iterations="100" o_solref="0.001 1" o_solimp="0.99 0.96 0.001" cone="elliptic" jacobian="dense">
+        <flag override="enable" />
+    </option>
+
+    <size nconmax="16" njmax="16" />
+
+    <worldbody>
+        <geom name="geom_ground" type="plane" size="1.0 1.0 0.032418325543403625 " pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" mass="1.0" rgba="0.5 0.5 0.5 1" contype="1" conaffinity="1"/>
+        <body name="leg0_body0" pos="0.40000003576278687 0.11180341988801956 0.10000000149011612" quat="0.9341723322868347 0.0 0.0 0.3568221628665924">
+            <joint name="leg0_joint0" type="hinge" axis="0.0 0.0 1.0" pos="-2.9802322387695312e-08 -0.15000003576278687 -7.450580596923828e-09" stiffness="0.0" damping="1.0" springref="0.0" limited="false"/>
+            <geom name="leg0_geom0" type="box" size="0.1499999761581421 0.015 0.015000001527369022 " pos="-7.450580596923828e-09 -7.450580596923828e-09 -7.450580596923828e-09" quat="0.7071068286895752 0.0 0.0 0.7071067094802856" mass="1.0" rgba="1.0 0.2 0.2 1.0" contype="0" conaffinity="0"/>
+            <body name="leg0_body1" pos="-0.14905795454978943 0.13321508467197418 -7.450580596923828e-09" quat="0.66637122631073 0.0 0.0 0.7456201910972595">
+                <body name="endeffector" pos="0.07482634484767914 0.2166074514389038 0.0038357898592948914" quat="0.3564518094062805 -0.0 -0.0 -0.9343138337135315">
+                    <geom name="geom_endeffector" type="box" size="0.1 0.1 0.051 " pos="0.0 0.0 0.0" quat="1.0 0.0 0.0 0.0" mass="1.0" rgba="0.8 0.8 0.8 1" contype="1" conaffinity="1"/>
+                    <geom name="geom_endeffector_cylinder" type="cylinder" size="0.1 0.02" pos="0.0 0.0 0.05" quat="1.0 0.0 0.0 0.0" mass="0.1" rgba="0.8 0.8 0.0 0.5" contype="0" conaffinity="0"/>
+                    <joint name="leg0_joint2" type="hinge" axis="0.0 0.0 1.0" pos="0.1001773327589035 -0.00015851855278015137 -0.0038357824087142944" stiffness="0.0" damping="0.0" springref="0.0" limited="false"/>
+                </body>
+                <joint name="leg0_joint1" type="hinge" axis="0.0 0.0 1.0" pos="4.470348358154297e-08 -0.15000005066394806 7.450580596923828e-09" stiffness="0.0" damping="0.0" springref="0.0" limited="false"/>
+                <geom name="leg0_geom1" type="box" size="0.1499999761581421 0.015 0.014 " pos="0.0 7.450580596923828e-09 7.450580596923828e-09" quat="0.7071067094802856 0.0 0.0 0.7071068286895752" mass="1.0" rgba="1.0 0.5 0.5 1.0" contype="0" conaffinity="0"/>
+            </body>
+        </body>
+        <body name="leg1_body0" pos="-0.2968246340751648 0.2905084788799286 0.09999999403953552" quat="0.15806910395622253 0.0 0.0 0.9874280691146851">
+            <joint name="leg1_joint0" type="hinge" axis="0.0 0.0 1.0" pos="-2.9802322387695312e-08 -0.15000000596046448 0.0" stiffness="0.0" damping="1.0" springref="0.0" limited="false"/>
+            <geom name="leg1_geom0" type="box" size="0.1499999761581421 0.015 0.015000001527369022 " pos="-1.4901161193847656e-08 -7.450580596923828e-09 0.0" quat="0.7071067094802856 0.0 0.0 0.7071068286895752" mass="1.0" rgba="0.2 1.0 0.2 1.0" contype="0" conaffinity="0"/>
+            <body name="leg1_body1" pos="-0.1490580141544342 0.13321509957313538 0.0" quat="0.66637122631073 0.0 0.0 0.7456201910972595">
+                <joint name="leg1_joint1" type="hinge" axis="0.0 0.0 1.0" pos="5.21540641784668e-08 -0.15000009536743164 0.0" stiffness="0.0" damping="0.0" springref="0.0" limited="false"/>
+                <geom name="leg1_geom1" type="box" size="0.1499999761581421 0.015 0.014" pos="0.0 -5.587935447692871e-09 0.0" quat="0.7071067094802856 0.0 0.0 0.7071068286895752" mass="1.0" rgba="0.5 1.0 0.5 1.0" contype="0" conaffinity="0"/>
+            </body>
+        </body>
+        <body name="leg2_body0" pos="-0.10317538678646088 -0.40231195092201233 0.09999998658895493" quat="0.7761032581329346 0.0 0.0 -0.6306058764457703">
+            <joint name="leg2_joint0" type="hinge" axis="0.0 0.0 1.0" pos="-2.9802322387695312e-08 -0.15000002086162567 0.0" stiffness="0.0" damping="1.0" springref="0.0" limited="false"/>
+            <geom name="leg2_geom0" type="box" size="0.1499999761581421 0.015 0.015000001527369022 " pos="-1.1175870895385742e-08 0.0 0.0" quat="0.7071067094802856 0.0 0.0 0.7071068286895752" mass="1.0" rgba="0.2 0.2 1.0 1.0" contype="0" conaffinity="0"/>
+            <body name="leg2_body1" pos="-0.1490580439567566 0.13321512937545776 0.0" quat="0.66637122631073 0.0 0.0 0.7456201910972595">
+                <joint name="leg2_joint1" type="hinge" axis="0.0 0.0 1.0" pos="1.862645149230957e-08 -0.15000008046627045 0.0" stiffness="0.0" damping="0.0" springref="0.0" limited="false"/>
+                <geom name="leg2_geom1" type="box" size="0.1499999761581421 0.015 0.014 " pos="1.3969838619232178e-09 6.984919309616089e-09 0.0" quat="0.7071065902709961 0.0 0.0 0.7071070671081543" mass="1.0" rgba="0.5 0.5 1.0 1.0" contype="0" conaffinity="0"/>
+            </body>
+        </body>
+        <light directional="true" cutoff="4" exponent="20" diffuse="1 1 1" specular="0 0 0" pos="0.9 0.3 2.5" dir="-0.9 -0.3 -2.5"/>
+
+        <geom type="box" size="0.005 0.005 .5" pos="0.0 0.0 .5" quat="1.0 0.0 0.0 0.0" mass="1.0" rgba="0.0 0.0 1.0 0.5" contype="0" conaffinity="0"/>
+    </worldbody>
+    <actuator>
+        <position name="act_leg0_joint0" joint="leg0_joint0" ctrllimited="false" forcelimited="false" kp="10.0"/>
+        <position name="act_leg1_joint0" joint="leg1_joint0" ctrllimited="false" forcelimited="false" kp="10.0"/>
+        <position name="act_leg2_joint0" joint="leg2_joint0" ctrllimited="false" forcelimited="false" kp="10.0"/>
+    </actuator>
+    <equality>
+        <connect body1="endeffector" body2="leg1_body1" anchor="-0.04995138943195343 0.08683536946773529 -0.0038357898592948914"/>
+        <connect body1="endeffector" body2="leg2_body1" anchor="-0.050225939601659775 -0.08667685091495514 -0.0038357973098754883"/>
+    </equality>
+    <sensor/>
+</mujoco>

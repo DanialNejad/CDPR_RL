@@ -1,0 +1,32 @@
+<mujoco model="Rope">
+  <option timestep="0.001" jacobian="dense"/>
+  <size nconmax="500" njmax="1500" nkey="1"/>
+  <default>
+    <geom solref="1e-2 5" solimp=".5 .99 1e-3" friction=".5"/>
+  </default>
+  <worldbody>
+    <light pos=".5 0 2"/>
+    <geom type="box" pos="1.15 0 0.12" size="1 0.5 0.03" rgba="0 .7 0 1"/>
+    <geom name="base" type="cylinder" pos="0 0 0.15" size="0.2 0.02" rgba="0 .7 0 1"/>
+    <body name="pulley2" pos="0 0 0.25" euler="0 0 0">
+      <joint name="pin" type="hinge" axis="0 0 1" pos="0 0 0" damping="1"/>
+      <geom type="cylinder" size="0.1 0.1" rgba="0 .7 0 1"/>
+      <body name="CB0" pos="0 0.1 -0.02" euler="0 0 0">
+        <composite type="cable" count="50 1 1" offset="0 0 0" prefix="C">
+          <joint kind="main" damping="0.0001" armature="0.00001"/>
+          <geom type="capsule" size=".005 .01" rgba=".8 .2 .1 1"/>
+        </composite>
+      </body>
+    </body>
+    <body name="weight" pos="1.2 .1 .23">
+      <freejoint/>
+      <geom type="box" size=".05 .05 .05" rgba=".2 .2 .7 1"/>
+    </body>
+  </worldbody>
+  <equality>
+    <connect body1="weight" body2="CB49" anchor="-.05 0 0" solref="-10000 -1000"/>
+  </equality>
+  <actuator>
+    <motor name="motor" joint="pin" gear="1" ctrllimited="true" ctrlrange="-3 3"/>
+  </actuator>
+</mujoco>  

@@ -6,8 +6,8 @@ import numpy as np
 import os
 import csv
 
-xml_path = 'Kamal_final.xml' #xml file (assumes this is in the same folder as this file)
-simend = 7 #simulation time
+xml_path = 'Kamal_test1.xml' #xml file (assumes this is in the same folder as this file)
+simend = 5 #simulation time
 print_camera_config = 0 #set to 1 to print camera config
                         #this is useful for initializing view of the model)
 
@@ -20,8 +20,25 @@ lasty = 0
 
 
 t = []
-theta = []
-theta_dot = []
+# cable length
+l1 = []
+l2 = []
+l3 = []
+# upper cable force
+fu1 = []
+fu2 = []
+fu3 = []
+# left cable force
+fl1 = []
+fl2 = []
+fl3 = []
+# right cable force
+fr1 = []
+fr2 = []
+fr3 = []
+
+inp = []
+
 
 def init_controller(model,data):
     #initialize the controller here. This function is called once, in the beginning
@@ -30,8 +47,24 @@ def init_controller(model,data):
 def controller(model, data):
     #put the controller here. This function is called inside the simulation.
     t.append(data.time)
-    theta.append(data.sensordata[0])
-    theta_dot.append(data.sensordata[1])
+
+    l1.append(data.sensordata[0])
+    l2.append(data.sensordata[1])
+    l3.append(data.sensordata[2])
+
+    fu1.append(data.sensordata[3])
+    fu2.append(data.sensordata[4])
+    fu3.append(data.sensordata[5])
+
+    # fl1.append(data.sensordata[6])
+    # fl2.append(data.sensordata[7])
+    # fl3.append(data.sensordata[8])
+
+    data.ctrl[0] = 10000*np.cos(0.3*np.pi*data.time)
+    # data.ctrl[0] = 10000*(np.heaviside(data.time - 2,0))
+
+    inp.append(data.ctrl[0])
+    # data.ctrl[1] = 5000*np.sin(0.3*np.pi*data.time) - 5000
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
@@ -138,10 +171,10 @@ glfw.set_mouse_button_callback(window, mouse_button)
 glfw.set_scroll_callback(window, scroll)
 
 # Example on how to set camera configuration
-# cam.azimuth = 90
-# cam.elevation = -45
-# cam.distance = 2
-# cam.lookat = np.array([0.0, 0.0, 0])
+cam.azimuth = -90
+cam.elevation = -25
+cam.distance = 6
+cam.lookat = np.array([0.0, -2, 0])
 
 #initialize the controller
 init_controller(model,data)
@@ -161,10 +194,11 @@ while not glfw.window_should_close(window):
 
         # Combine arrays into a list
         # theta = np.degrees(theta) + 45
-        theta = theta + np.radians(45)
+        # l1 = l1 + np.radians(45)
         # theta_dot = np.degrees(theta_dot)
-        data = [t, theta, theta_dot]
-        print(len(theta))
+        # data = [t, theta, theta_dot]
+        print(len(data.efc_force))
+        print(len(data.sensordata))
         # data_rearranged = np.column_stack(data)
 
         # Save rearranged data to CSV
@@ -172,14 +206,50 @@ while not glfw.window_should_close(window):
         # print(theta)
         # print(theta_dot)
 
+        plt.figure()
+        plt.plot(t,inp)
+        plt.xlabel('Time (Sec)')
+        plt.ylabel('Force')
+
+        plt.figure()
+        # plt.subplot(3,1,1)
+        plt.plot(t,l1)
+        plt.ylabel('Upper Cable Length')
+        # plt.subplot(3,1,2)
+        # plt.plot(t,l2)
+        # plt.ylabel('Left Cable Length')
+        # plt.subplot(3,1,3)
+        # plt.plot(t,l3)
+        # plt.ylabel('Right Cable Length')
+        # plt.xlabel('Time (Sec)')
+
+        plt.figure()
+        plt.title('Upper Cable Force')
+        plt.subplot(3,1,1)
+        plt.plot(t,fu1)
+        plt.ylabel('$F_x$')
+        plt.subplot(3,1,2)
+        plt.plot(t,fu2)
+        plt.ylabel('$F_y$')
+        plt.subplot(3,1,3)
+        plt.plot(t,fu3)
+        plt.ylabel('$F_z$')
+        plt.xlabel('Time (Sec)')
+
         # plt.figure()
-        # plt.subplot(2,1,1)
-        # plt.plot(t,theta)
-        # plt.ylabel('theta')
-        # plt.subplot(2,1,2)
-        # plt.plot(t,theta_dot)
-        # plt.ylabel('theta_dot')
-        # plt.show()
+        # plt.title('Left Cable Force')
+        # plt.subplot(3,1,1)
+        # plt.plot(t,fl1)
+        # plt.ylabel('$F_x$')
+        # plt.subplot(3,1,2)
+        # plt.plot(t,fl2)
+        # plt.ylabel('$F_y$')
+        # plt.subplot(3,1,3)
+        # plt.plot(t,fl3)
+        # plt.ylabel('$F_z$')
+        # plt.xlabel('Time (Sec)')
+
+        plt.show()
         break
 
     # get framebuffer viewport
@@ -205,78 +275,4 @@ while not glfw.window_should_close(window):
 
 glfw.terminate()
 
-
-
-
-
-
-# Parameters
-g = 9.81 # acceleration due to gravity (m/s^2)
-L = np.sqrt(.9**2 + .9**2) # length of the pendulum (m)
-def pendulum_dynamics(t, y):
-    Theta, omega = y
-    dTheta_dt = omega
-    domega_dt = - (g / L) * np.sin(Theta)
-    return np.array([dTheta_dt, domega_dt])
-
-# RK4 implementation
-def rk4_step(func, t, y, dt):
-    k1 = func(t, y)
-    k2 = func(t + 0.5 * dt, y + 0.5 * dt * k1)
-    k3 = func(t + 0.5 * dt, y + 0.5 * dt * k2)
-    k4 = func(t + dt, y + dt * k3)
-    return y + (dt / 6) * (k1 + 2*k2 + 2*k3 + k4)
-
-# Initial conditions
-Theta0 = theta[0]  # initial angle (radians)
-omega0 = theta_dot[0]        # initial angular velocity (radians/s)
-y0 = np.array([Theta0, omega0])
-
-# Time span for the simulation
-t_span = (0, simend)  # 10 seconds
-t_eval = np.linspace(t_span[0], t_span[1], len(theta))  # 500 points for evaluation
-dt = t_eval[1] - t_eval[0]  # time step
-
-# Solve the system using RK4
-y = np.zeros((len(t_eval), 2))
-y[0] = y0
-
-for i in range(1, len(t_eval)):
-    y[i] = rk4_step(pendulum_dynamics, t_eval[i-1], y[i-1], dt)
-
-# Extract the solution
-Theta = y[:, 0]
-omega = y[:, 1]
-
-# Convert Theta from radians to degrees and add 45 degrees
-Theta_deg = np.degrees(Theta) + 45
-
-# Convert omega from radians per second to degrees per second
-omega_deg_s = np.degrees(omega)
-
-# Plot the results
-plt.figure(figsize=(12, 5))
-
-# Plot Theta vs time
-plt.subplot(1, 2, 1)
-# plt.plot(t_eval, Theta, label='Theta (degrees)')
-# plt.plot(t_eval, theta, label='theta (degrees)')
-plt.plot(t_eval, theta - Theta, label='theta (degrees)')
-plt.xlabel('Time (s)')
-plt.ylabel('Theta (degrees)')
-plt.title('Angular Displacement vs Time')
-plt.legend()
-
-# Plot omega vs time
-# plt.subplot(1, 2, 2)
-# plt.plot(t_eval, omega_deg_s, label='Omega (deg/s)', color='r')
-# plt.xlabel('Time (s)')
-# plt.ylabel('Omega (deg/s)')
-# plt.title('Angular Velocity vs Time')
-# plt.legend()
-
-plt.tight_layout()
-plt.show()
-print(np.sqrt(np.mean((Theta - theta) ** 2)))
-# print(np.subtract(Theta,theta))
 

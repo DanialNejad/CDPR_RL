@@ -43,14 +43,14 @@
             <!-- <body name="pulley1" pos="0 0.02 0.05"> -->
                 <geom name="p1" type="cylinder" size="0.01 0.01" pos="0 0.02 0.05" euler="90 0 0" rgba="0.7 0.1 0.1 1" mass="0.5"/>
                 <!-- <body> -->
-                    <site name="side1" pos="0 0.02 -0.03"/>
+                    <site name="side1" pos="0 0.02 0.03"/>
                 <!-- </body> -->
             <!-- </body> -->
 
             <!-- <body name="pulley2" pos="0.05 0.02 0"> -->
                 <geom name="p2" type="cylinder" size="0.01 0.01" pos="0.05 0.02 0" euler="90 0 0" rgba="0.7 0.1 0.1 1" mass="0.5"/>
                 <!-- <body> -->
-                    <site name="side2" pos="-0.03 0.02 0"/>
+                    <site name="side2" pos="0.03 0.02 0"/>
                 <!-- </body> -->
             <!-- </body> -->
 
@@ -60,6 +60,7 @@
                     <site name="side3" pos="-0.03 0.02 0"/>
                 <!-- </body> -->
             <!-- </body> -->
+            <site name="end_pos" pos="0 0.02 0"/>
 
             <!-- <body pos="0 0.04 0">
                 <geom type="cylinder" size="0.07 0.01" euler="90 0 0" rgba="0.5 0.5 0.5 1"/>
@@ -75,19 +76,19 @@
     </worldbody>
 
     <tendon>
-        <spatial name="tendon1" width=".002" limited="true" range="0 1" damping="0.1" stiffness="10000">
+        <spatial name="tendon1" width=".002" damping="0.1" stiffness="10000">
             <site site="u1"/>
             <geom geom="p1" sidesite="side1"/>
             <site site="u2"/>
         </spatial>
 
-        <spatial name="tendon2" width=".002" limited="true" range="0 1" damping="1" stiffness="100">
+        <spatial name="tendon2" width=".002" damping="0.1" stiffness="100">
             <site site="l1"/>
             <geom geom="p2" sidesite="side2"/>
             <site site="l2"/>
         </spatial>
 
-        <spatial name="tendon3" width=".002" limited="true" range="0 1" damping="1" stiffness="100">
+        <spatial name="tendon3" width=".002" damping="0.1" stiffness="100">
             <site site="r1"/>
             <geom geom="p3" sidesite="side3"/>
             <site site="r2"/>
@@ -101,19 +102,20 @@
     </equality>
 
     <actuator>
-        <motor name="Upper Motor" tendon="tendon1" ctrlrange="-100000 100000"/>
+        <motor name="Upper Motor" tendon="tendon1" ctrlrange="-300000 300000"/>
         <!-- <position name="tendon1" tendon="tendon1" ctrllimited="true" ctrlrange="-20 20" kp="1000"/> -->
-        <motor name="Left Motor" tendon="tendon2" ctrlrange="-10000 0"/>
-        <motor name="Right Motor" tendon="tendon3" ctrlrange="-10000 0"/>
+        <motor name="Left Motor" tendon="tendon2" ctrlrange="-300000 0"/>
+        <motor name="Right Motor" tendon="tendon3" ctrlrange="-300000 0"/>
     </actuator>
 
     <sensor>
         <tendonpos tendon="tendon1"/>
         <tendonpos tendon="tendon2"/>
         <tendonpos tendon="tendon3"/>
-        <tendonlimitfrc tendon="tendon1" />
+        <framepos objtype="site" objname="end_pos"/>
+        <!-- <tendonlimitfrc tendon="tendon1" />
         <tendonlimitfrc tendon="tendon2" />
-        <tendonlimitfrc tendon="tendon3" />
+        <tendonlimitfrc tendon="tendon3" /> -->
         <!-- <force site="u1"/>
         <force site="l1"/>
         <force site="r1"/> -->

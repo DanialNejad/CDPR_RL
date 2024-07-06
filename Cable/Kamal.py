@@ -6,7 +6,7 @@ import numpy as np
 import os
 import csv
 
-xml_path = 'Kamal_test1.xml' #xml file (assumes this is in the same folder as this file)
+xml_path = 'Kamal_final_ver2.xml' #xml file (assumes this is in the same folder as this file)
 simend = 5 #simulation time
 print_camera_config = 0 #set to 1 to print camera config
                         #this is useful for initializing view of the model)
@@ -20,6 +20,10 @@ lasty = 0
 
 
 t = []
+# end effector position
+ee_x = []
+ee_y = []
+ee_z = []
 # cable length
 l1 = []
 l2 = []
@@ -52,19 +56,23 @@ def controller(model, data):
     l2.append(data.sensordata[1])
     l3.append(data.sensordata[2])
 
-    fu1.append(data.sensordata[3])
-    fu2.append(data.sensordata[4])
-    fu3.append(data.sensordata[5])
+    ee_x.append(-1*data.sensordata[3])
+    ee_y.append(data.sensordata[4])
+    ee_z.append(data.sensordata[5])
+
+    # fu1.append(data.sensordata[3])
+    # fu2.append(data.sensordata[4])
+    # fu3.append(data.sensordata[5])
 
     # fl1.append(data.sensordata[6])
     # fl2.append(data.sensordata[7])
     # fl3.append(data.sensordata[8])
 
-    data.ctrl[0] = 10000*np.cos(0.3*np.pi*data.time)
-    # data.ctrl[0] = 10000*(np.heaviside(data.time - 2,0))
+    data.ctrl[0] = 100000*np.cos(0.3*np.pi*data.time)
+    # data.ctrl[0] = 100000*(np.heaviside(data.time - 2,0))
 
     inp.append(data.ctrl[0])
-    # data.ctrl[1] = 5000*np.sin(0.3*np.pi*data.time) - 5000
+    data.ctrl[1] = 100000*np.sin(0.3*np.pi*data.time) - 100000
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
@@ -197,7 +205,7 @@ while not glfw.window_should_close(window):
         # l1 = l1 + np.radians(45)
         # theta_dot = np.degrees(theta_dot)
         # data = [t, theta, theta_dot]
-        print(len(data.efc_force))
+        # print(len(data.efc_force))
         print(len(data.sensordata))
         # data_rearranged = np.column_stack(data)
 
@@ -207,34 +215,37 @@ while not glfw.window_should_close(window):
         # print(theta_dot)
 
         plt.figure()
-        plt.plot(t,inp)
-        plt.xlabel('Time (Sec)')
-        plt.ylabel('Force')
+        plt.plot(ee_x,ee_z)
+
+        # plt.figure()
+        # plt.plot(t,inp)
+        # plt.xlabel('Time (Sec)')
+        # plt.ylabel('Force')
 
         plt.figure()
-        # plt.subplot(3,1,1)
+        plt.subplot(3,1,1)
         plt.plot(t,l1)
         plt.ylabel('Upper Cable Length')
-        # plt.subplot(3,1,2)
-        # plt.plot(t,l2)
-        # plt.ylabel('Left Cable Length')
-        # plt.subplot(3,1,3)
-        # plt.plot(t,l3)
-        # plt.ylabel('Right Cable Length')
-        # plt.xlabel('Time (Sec)')
-
-        plt.figure()
-        plt.title('Upper Cable Force')
-        plt.subplot(3,1,1)
-        plt.plot(t,fu1)
-        plt.ylabel('$F_x$')
         plt.subplot(3,1,2)
-        plt.plot(t,fu2)
-        plt.ylabel('$F_y$')
+        plt.plot(t,l2)
+        plt.ylabel('Left Cable Length')
         plt.subplot(3,1,3)
-        plt.plot(t,fu3)
-        plt.ylabel('$F_z$')
+        plt.plot(t,l3)
+        plt.ylabel('Right Cable Length')
         plt.xlabel('Time (Sec)')
+
+        # plt.figure()
+        # plt.title('Upper Cable Force')
+        # plt.subplot(3,1,1)
+        # plt.plot(t,fu1)
+        # plt.ylabel('$F_x$')
+        # plt.subplot(3,1,2)
+        # plt.plot(t,fu2)
+        # plt.ylabel('$F_y$')
+        # plt.subplot(3,1,3)
+        # plt.plot(t,fu3)
+        # plt.ylabel('$F_z$')
+        # plt.xlabel('Time (Sec)')
 
         # plt.figure()
         # plt.title('Left Cable Force')

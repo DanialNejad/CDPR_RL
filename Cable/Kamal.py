@@ -56,7 +56,7 @@ def controller(model, data):
     l2.append(data.sensordata[1])
     l3.append(data.sensordata[2])
 
-    ee_x.append(-1*data.sensordata[3])
+    ee_x.append(data.sensordata[3])
     ee_y.append(data.sensordata[4])
     ee_z.append(data.sensordata[5])
 
@@ -179,10 +179,10 @@ glfw.set_mouse_button_callback(window, mouse_button)
 glfw.set_scroll_callback(window, scroll)
 
 # Example on how to set camera configuration
-cam.azimuth = -90
-cam.elevation = -25
-cam.distance = 6
-cam.lookat = np.array([0.0, -2, 0])
+cam.azimuth = 90
+cam.elevation = -30
+cam.distance = 5
+cam.lookat = np.array([0.0, 1.5, 0])
 
 #initialize the controller
 init_controller(model,data)

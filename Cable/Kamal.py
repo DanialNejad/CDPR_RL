@@ -206,7 +206,7 @@ while not glfw.window_should_close(window):
         # theta_dot = np.degrees(theta_dot)
         # data = [t, theta, theta_dot]
         # print(len(data.efc_force))
-        print(len(data.sensordata))
+        # print(ee_y)
         # data_rearranged = np.column_stack(data)
 
         # Save rearranged data to CSV

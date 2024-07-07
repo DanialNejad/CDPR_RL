@@ -27,6 +27,8 @@
             <site name="u2" pos="-0.95 -0.03 2"/>
             <site name="r1" pos="0.985 -0.03 1.965"/>
             <site name="r2" pos="0.985 -0.03 0.235"/>
+
+            <site name="dpoint" pos="0.25 -0.02 0.8" rgba="1 0 0 1"/>
             
             <!-- <body pos="0.967 0.02 0.217">
                 <geom name="left_pulley" type="cylinder" size="0.025 0.02" euler="90 0 0"/>
@@ -76,7 +78,7 @@
     </worldbody>
 
     <tendon>
-        <spatial name="tendon1" width=".002" damping="0.1" stiffness="10000">
+        <spatial name="tendon1" width=".002" damping="0.1" stiffness="100">
             <site site="u1"/>
             <geom geom="p1" sidesite="side1"/>
             <site site="u2"/>

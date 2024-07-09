@@ -16,7 +16,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
     def __init__(self, max_timesteps=1000, **kwargs):
         utils.EzPickle.__init__(self, **kwargs)
-        xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/CustomMuJoCoEnviromentForRL/assets/Kamal_final_ver2.xml")
+        xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/assets/Kamal_final_ver2.xml")
         
         observation_space = Box(low=-np.inf, high=np.inf, shape=(9,), dtype=np.float64)
         
@@ -27,23 +27,21 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
             observation_space=observation_space,
             **kwargs
         )
-
-        # self.action_space = Box(low=-300000, high=300000, shape=(3,), dtype=np.float32)
-
+        
         self.max_timesteps = max_timesteps
         self.current_timesteps = 0
         self.target = self._sample_target()
 
     def _sample_target(self):
-        # target_x = np.random.uniform(-0.25, 0.25)
-        target_x = 0.4       
+        target_x = np.random.uniform(-0.5, 0.5)
+        # target_x = 0.4       
         target_y = -0.03
-        target_z = 0.5
-        # target_z = np.random.uniform(0.8, 1.3)
+        # target_z = 0.5
+        target_z = np.random.uniform(0.3, 1.3)
         return np.array([target_x, target_y, target_z])
 
     def step(self, action):
-        # self.action_space = Box(low=-300000, high=300000, shape=(3,), dtype=np.float32)        
+
         self.do_simulation(action, self.frame_skip)
         print('actions: ',action)
         self.current_timesteps += 1 
@@ -94,12 +92,35 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
         return observation
 
+    # def _compute_reward(self, obs):
+    #     end_effector_pos = obs[:3]
+    #     target_pos = obs[3:6]
+    #     distance = np.linalg.norm(end_effector_pos - target_pos)
+
+    #     return -distance
+    
     def _compute_reward(self, obs):
         end_effector_pos = obs[:3]
         target_pos = obs[3:6]
-        distance = np.linalg.norm(end_effector_pos - target_pos)
+        tracking_error = np.linalg.norm(end_effector_pos - target_pos)
 
-        return -distance
+        # R1: Reward for minimizing the tracking error
+        R1 = np.exp(-3 * tracking_error)
+        distance = R1
+        # # R2: Penalize the action values to avoid high cable tensions
+        # action = self.last_action  # Assuming you store the last action applied to the environment
+        # R2 = -0.05 * np.sum(np.square(action))
+
+        # # R3: Reward for reducing the error derivative
+        # error_derivative = np.linalg.norm(self.last_error - tracking_error)
+        # R3 = -error_derivative
+        # if error_derivative <= -10:
+        #     R3 = -10
+
+        # total_reward = R1 + R2 + R3
+        # self.last_error = tracking_error  # Update last error for next step
+
+        return distance
 
     def _is_done(self, obs):
         distance = np.linalg.norm(obs[:3] - obs[3:6])

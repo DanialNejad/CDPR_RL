@@ -28,7 +28,7 @@ import imageio
 
 # Initialize the environment and the model
 env = CableControlEnv(render_mode="rgb_array")
-model = PPO.load("ppo_cable_control.zip")
+model = PPO.load("ppo_cable_control1.zip")
 
 # Reset the environment
 obs, info = env.reset()
@@ -46,7 +46,7 @@ for _ in range(500):
         obs, info = env.reset()
 
 # Save the frames as a video
-video_filename = 'ppo_cable_control1.mp4'
+video_filename = 'ppo_cable_control5.mp4'
 height, width, layers = frames[0].shape
 video = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width, height))
 

@@ -14,7 +14,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         "render_fps": 100,
     }
 
-    def __init__(self, max_timesteps=1000, **kwargs):
+    def __init__(self, max_timesteps=2000, **kwargs):
         utils.EzPickle.__init__(self, **kwargs)
         xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/assets/Kamal_final_ver2.xml")
         
@@ -52,7 +52,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         reward = self._compute_reward(obs)
         done = False
         truncated = self.current_timesteps >= self.max_timesteps
-
+        print('action: ',action)
         # Check if the target is reached
         if self._is_target_reached(obs):
             reward += 100
@@ -60,7 +60,9 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
             if self.current_target_index >= len(self.targets):
                 reward += 500  # Additional reward for completing all targets
                 done = True  # End episode after completing the sequence
-
+            else:
+                done = False  # Continue to next target
+        print('is_done: ',done)
         return obs, reward, bool(done), bool(truncated), {}
 
     def reset_model(self, new_targets=None):
@@ -100,6 +102,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         # Current target should be a part of the observation
         current_target = self.targets[self.current_target_index]
         observation = np.concatenate([end_effector_pos_x, end_effector_pos_y, end_effector_pos_z, current_target, tendon1_length, tendon2_length, tendon3_length])
+        print('obs: ',observation)
         return observation
 
     def _compute_reward(self, obs):

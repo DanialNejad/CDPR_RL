@@ -104,10 +104,13 @@
     </equality>
 
     <actuator>
-        <motor name="Upper Motor" tendon="tendon1" ctrlrange="-300000 300000"/>
-        <!-- <position name="tendon1" tendon="tendon1" ctrllimited="true" ctrlrange="-20 20" kp="1000"/> -->
+        <!-- <motor name="Upper Motor" tendon="tendon1" ctrlrange="-300000 300000"/>
         <motor name="Right Motor" tendon="tendon2" ctrlrange="-300000 0"/>
-        <motor name="Left Motor" tendon="tendon3" ctrlrange="-300000 0"/>
+        <motor name="Left Motor" tendon="tendon3" ctrlrange="-300000 0"/> -->
+        
+        <motor name="Upper Motor" tendon="tendon1" ctrlrange="-1 1" gear="300000"/>
+        <motor name="Right Motor" tendon="tendon2" ctrlrange="-1 0" gear="300000"/>
+        <motor name="Left Motor" tendon="tendon3" ctrlrange="-1 0" gear="300000"/>
     </actuator>
 
     <sensor>
@@ -121,6 +124,7 @@
         <!-- <force site="u1"/>
         <force site="l1"/>
         <force site="r1"/> -->
+        <framelinvel objtype="site" objname="end_pos"/>
     </sensor>
 
 </mujoco>

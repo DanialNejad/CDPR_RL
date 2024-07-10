@@ -24,6 +24,10 @@ t = []
 ee_x = []
 ee_y = []
 ee_z = []
+# end effector velocity
+ee_vx = []
+ee_vy = []
+ee_vz = []
 # cable length
 l1 = []
 l2 = []
@@ -60,6 +64,10 @@ def controller(model, data):
     ee_y.append(data.sensordata[4])
     ee_z.append(data.sensordata[5])
 
+    ee_vx.append(data.sensordata[6])
+    ee_vy.append(data.sensordata[7])
+    ee_vz.append(data.sensordata[8])
+
     # fu1.append(data.sensordata[3])
     # fu2.append(data.sensordata[4])
     # fu3.append(data.sensordata[5])
@@ -68,11 +76,11 @@ def controller(model, data):
     # fl2.append(data.sensordata[7])
     # fl3.append(data.sensordata[8])
 
-    data.ctrl[0] = 100000*np.cos(0.3*np.pi*data.time)
+    data.ctrl[0] = 0.5*np.cos(0.3*np.pi*data.time)
     # data.ctrl[0] = 100000*(np.heaviside(data.time - 2,0))
 
     inp.append(data.ctrl[0])
-    data.ctrl[1] = 100000*np.sin(0.3*np.pi*data.time) - 100000
+    data.ctrl[1] = 0.5*np.sin(0.3*np.pi*data.time) - 0.5
 
 def keyboard(window, key, scancode, act, mods):
     if act == glfw.PRESS and key == glfw.KEY_BACKSPACE:
@@ -205,7 +213,7 @@ while not glfw.window_should_close(window):
         # l1 = l1 + np.radians(45)
         # theta_dot = np.degrees(theta_dot)
         # data = [t, theta, theta_dot]
-        # print(len(data.efc_force))
+        print(len(data.sensordata))
         # print(ee_y)
         # data_rearranged = np.column_stack(data)
 
@@ -215,7 +223,21 @@ while not glfw.window_should_close(window):
         # print(theta_dot)
 
         plt.figure()
+        plt.title('End Effector Position')
         plt.plot(ee_x,ee_z)
+
+        plt.figure()
+        plt.title('End Effector Velocity')
+        plt.subplot(3,1,1)
+        plt.plot(t,ee_vx)
+        plt.ylabel('$V_x$')
+        plt.subplot(3,1,2)
+        plt.plot(t,ee_vy)
+        plt.ylabel('$V_y$')
+        plt.subplot(3,1,3)
+        plt.plot(t,ee_vz)
+        plt.ylabel('$V_z$')
+        plt.xlabel('Time (Sec)')
 
         # plt.figure()
         # plt.plot(t,inp)
@@ -223,6 +245,7 @@ while not glfw.window_should_close(window):
         # plt.ylabel('Force')
 
         plt.figure()
+        plt.title('Cable Length')
         plt.subplot(3,1,1)
         plt.plot(t,l1)
         plt.ylabel('Upper Cable Length')

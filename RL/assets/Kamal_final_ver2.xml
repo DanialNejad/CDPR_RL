@@ -27,6 +27,8 @@
             <site name="u2" pos="-0.95 -0.03 2"/>
             <site name="r1" pos="0.985 -0.03 1.965"/>
             <site name="r2" pos="0.985 -0.03 0.235"/>
+
+            <site name="dpoint" pos="0.25 -0.02 0.8" rgba="1 0 0 1"/>
             
             <!-- <body pos="0.967 0.02 0.217">
                 <geom name="left_pulley" type="cylinder" size="0.025 0.02" euler="90 0 0"/>
@@ -76,7 +78,7 @@
     </worldbody>
 
     <tendon>
-        <spatial name="tendon1" width=".002" damping="0.1" stiffness="10000">
+        <spatial name="tendon1" width=".002" damping="0.1" stiffness="100">
             <site site="u1"/>
             <geom geom="p1" sidesite="side1"/>
             <site site="u2"/>
@@ -102,8 +104,11 @@
     </equality>
 
     <actuator>
+        <!-- <motor name="Upper Motor" tendon="tendon1" ctrlrange="-300000 300000"/>
+        <motor name="Right Motor" tendon="tendon2" ctrlrange="-300000 0"/>
+        <motor name="Left Motor" tendon="tendon3" ctrlrange="-300000 0"/> -->
+        
         <motor name="Upper Motor" tendon="tendon1" ctrlrange="-1 1" gear="300000"/>
-        <!-- <position name="tendon1" tendon="tendon1" ctrllimited="true" ctrlrange="-20 20" kp="1000"/> -->
         <motor name="Right Motor" tendon="tendon2" ctrlrange="-1 0" gear="300000"/>
         <motor name="Left Motor" tendon="tendon3" ctrlrange="-1 0" gear="300000"/>
     </actuator>
@@ -119,6 +124,7 @@
         <!-- <force site="u1"/>
         <force site="l1"/>
         <force site="r1"/> -->
+        <framelinvel objtype="site" objname="end_pos"/>
     </sensor>
 
 </mujoco>

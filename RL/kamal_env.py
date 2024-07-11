@@ -33,11 +33,11 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.target = self._sample_target()
 
     def _sample_target(self):
-        target_x = np.random.uniform(-0.5, 0.5)
-        # target_x = 0.4       
+        # target_x = np.random.uniform(-0.5, 0.5)
+        target_x = 0.4       
         target_y = -0.03
-        # target_z = 0.5
-        target_z = np.random.uniform(0.3, 1.3)
+        target_z = 0.5
+        # target_z = np.random.uniform(0.3, 1.3)
         return np.array([target_x, target_y, target_z])
 
     def step(self, action):
@@ -51,7 +51,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         done = self._is_done(obs)
         
 
-        truncated = reward <= -10000000000000000000
+        truncated = self.current_timesteps >= self.max_timesteps
 
 
         # If the task is done, give an additional reward
@@ -105,8 +105,8 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         tracking_error = np.linalg.norm(end_effector_pos - target_pos)
 
         # R1: Reward for minimizing the tracking error
-        R1 = np.exp(-3 * tracking_error)
-        distance = R1
+        # R1 = np.exp(-3 * tracking_error)
+        distance = tracking_error
         # # R2: Penalize the action values to avoid high cable tensions
         # action = self.last_action  # Assuming you store the last action applied to the environment
         # R2 = -0.05 * np.sum(np.square(action))
@@ -120,7 +120,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         # total_reward = R1 + R2 + R3
         # self.last_error = tracking_error  # Update last error for next step
 
-        return distance
+        return -distance
 
     def _is_done(self, obs):
         distance = np.linalg.norm(obs[:3] - obs[3:6])

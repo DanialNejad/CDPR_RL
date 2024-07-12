@@ -109,11 +109,11 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         end_effector_pos = obs[:3]
         target_pos = obs[3:6]
         tracking_error = np.linalg.norm(end_effector_pos - target_pos)
+        distance = tracking_error
+        # R1 = np.exp(-3 * tracking_error)
+        # distance = R1
 
-        R1 = np.exp(-3 * tracking_error)
-        distance = R1
-
-        return distance
+        return -distance
 
     def _is_target_reached(self, obs):
         end_effector_pos = obs[:3]

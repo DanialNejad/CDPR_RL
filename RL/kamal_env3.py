@@ -14,22 +14,16 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         "render_fps": 100,
     }
 
-    def __init__(self, max_timesteps=1000, num_points=100, **kwargs):
+    def __init__(self, num_points=100, frame_skip=5, **kwargs):
         utils.EzPickle.__init__(self, **kwargs)
         xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/assets/Kamal_final_ver2.xml")
         
         observation_space = Box(low=-np.inf, high=np.inf, shape=(8,), dtype=np.float64)
         
-        MujocoEnv.__init__(
-            self,
-            xml_path,
-            frame_skip=5,
-            observation_space=observation_space,
-            **kwargs
-        )
-        
-        self.max_timesteps = max_timesteps
         self.num_points = num_points
+        self.frame_skip = frame_skip
+        self.theta_increment = 2 * np.pi / num_points  # Increment theta to complete circle in num_points steps
+        self.max_timesteps = int(2 * np.pi / self.theta_increment)  # Calculate max timesteps to complete one circle
         self.current_timesteps = 0
         self.w1 = 1.0  
         self.w2 = 0.01
@@ -38,8 +32,15 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.radius = 0.5
         self.center = np.array([0.0, -0.03, 0.8])
         self.theta = 0
-        self.theta_increment = 2 * np.pi / num_points  # Increment theta to complete circle in num_points steps
         self.points_reached = 0  # Counter for the number of target points reached
+
+        MujocoEnv.__init__(
+            self,
+            xml_path,
+            frame_skip=self.frame_skip,
+            observation_space=observation_space,
+            **kwargs
+        )
 
     def _sample_target(self):
         return self._target_trajectory(self.theta)

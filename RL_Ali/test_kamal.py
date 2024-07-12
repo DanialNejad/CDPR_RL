@@ -22,7 +22,7 @@
 # imageio.mimsave('ppo_cable_control.gif', frames, fps=120)
 
 from stable_baselines3 import PPO
-from kamal_env_ali import CableControlEnv
+from kamal_env import CableControlEnv
 import cv2
 import imageio
 

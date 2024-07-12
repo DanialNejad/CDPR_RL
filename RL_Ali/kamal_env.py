@@ -33,11 +33,11 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.target = self._sample_target()
 
     def _sample_target(self):
-        target_x = np.random.uniform(-0.5, 0.5)
-        # target_x = 0.4       
+        # target_x = np.random.uniform(-0.5, 0.5)
+        target_x = 0.4       
         target_y = -0.03
-        # target_z = 0.5
-        target_z = np.random.uniform(0.3, 1.3)
+        target_z = 0.5
+        # target_z = np.random.uniform(0.3, 1.3)
         return np.array([target_x, target_y, target_z])
 
     def step(self, action):

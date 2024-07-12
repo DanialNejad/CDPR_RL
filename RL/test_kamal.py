@@ -28,14 +28,14 @@ import imageio
 
 # Initialize the environment and the model
 env = CableControlEnv(render_mode="human")
-model = PPO.load("ppo_cable_control6.zip")
+model = PPO.load("ppo_cable_control_circle100.zip")
 
 # Reset the environment
 obs, info = env.reset()
 frames = []
 
 # Run the model for a number of steps and collect frames
-for _ in range(3000):
+for _ in range(1000):
     action, _states = model.predict(obs, deterministic=True)
     obs, reward, done, truncated, info = env.step(action)
 

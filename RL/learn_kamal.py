@@ -2,6 +2,7 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.env_checker import check_env
 from kamal_env3 import CableControlEnv
+# from kamal_env_end_to_end import CableControlEnv
 from callback import RenderCallback
 
 # def make_env():
@@ -27,6 +28,6 @@ check_env(env)
 model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_cable_control_tensorboard/")
 model.learn(total_timesteps=2000000, log_interval=4) 
             # callback=render_callback)
-model.save("ppo_cable_control6")
+model.save("ppo_cable_control_circle100")
 
 # %tensorboard --logdir ./ppo_cable_control_tensorboard/ --port 6007

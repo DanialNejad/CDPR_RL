@@ -23,35 +23,42 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         MujocoEnv.__init__(
             self,
             xml_path,
-            frame_skip=5,
+            frame_skip = 5,
             observation_space=observation_space,
             **kwargs
         )
         
         self.max_timesteps = max_timesteps
         self.current_timesteps = 0
+        self.phi = 0
         self.target = self._sample_target()
 
     def _sample_target(self):
-        # target_x = np.random.uniform(-0.5, 0.5)
-        target_x = 0.4       
+        C = [0, 1.15]
+        r = 0.2
+        target_x = C[0] + r*np.sin(self.phi)
+        # target_x = 0.4       
         target_y = -0.03
-        target_z = 0.5
-        # target_z = np.random.uniform(0.3, 1.3)
+        # target_z = 0.5
+        target_z = C[1] + r*np.cos(self.phi)
+        print('target: ',[target_x, target_y, target_z])
         return np.array([target_x, target_y, target_z])
 
     def step(self, action):
 
         self.do_simulation(action, self.frame_skip)
-        print('actions: ',action)
+        # print('actions: ',action)
         self.current_timesteps += 1 
+        # print('time step: ',self.current_timesteps)
+        self.phi = self.phi + 0.7*(1-np.tanh(0.6*self.data.time))
+        print('time step: ', self.data.time)
 
         obs = self._get_obs()
         reward = self._compute_reward(obs)
         done = self._is_done(obs)
         
 
-        truncated = reward <= -10000000000000000000
+        truncated = self.current_timesteps == self.max_timesteps
 
 
         # If the task is done, give an additional reward
@@ -63,7 +70,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
     def reset_model(self):
         qpos = self.init_qpos.copy()
         qvel = self.init_qvel.copy()
-        print('initial position: ', qpos)
+        # print('initial position: ', qpos)
         # Reset the end effector position and velocity
         qpos[0] = self.init_qpos[0]
         qpos[1] = self.init_qpos[1]
@@ -73,7 +80,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         # self.set_state(qpos)
         self.current_timesteps = 0
         self.target = self._sample_target()
-        print('position end effector: ', qpos)        
+        # print('position end effector: ', qpos)        
         return self._get_obs()
 
     def _get_obs(self):

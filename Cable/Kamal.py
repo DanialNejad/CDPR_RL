@@ -227,6 +227,10 @@ while not glfw.window_should_close(window):
         plt.plot(ee_x,ee_z)
 
         plt.figure()
+        plt.title('End Effector Position')
+        plt.plot(ee_y)
+
+        plt.figure()
         plt.title('End Effector Velocity')
         plt.subplot(3,1,1)
         plt.plot(t,ee_vx)

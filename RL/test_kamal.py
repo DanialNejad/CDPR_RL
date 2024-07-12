@@ -22,20 +22,20 @@
 # imageio.mimsave('ppo_cable_control.gif', frames, fps=120)
 
 from stable_baselines3 import PPO
-from kamal_env1 import CableControlEnv
+from kamal_env3 import CableControlEnv
 import cv2
 import imageio
 
 # Initialize the environment and the model
 env = CableControlEnv(render_mode="human")
-model = PPO.load("ppo_cable_control2.zip")
+model = PPO.load("ppo_cable_control6.zip")
 
 # Reset the environment
 obs, info = env.reset()
 frames = []
 
 # Run the model for a number of steps and collect frames
-for _ in range(2000):
+for _ in range(3000):
     action, _states = model.predict(obs, deterministic=True)
     obs, reward, done, truncated, info = env.step(action)
 

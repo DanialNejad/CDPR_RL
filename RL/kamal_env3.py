@@ -14,7 +14,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         "render_fps": 100,
     }
 
-    def __init__(self, num_points=100, frame_skip=5, **kwargs):
+    def __init__(self, num_points=50, frame_skip=5, **kwargs):
         utils.EzPickle.__init__(self, **kwargs)
         xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/assets/Kamal_final_ver2.xml")
         
@@ -23,7 +23,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.num_points = num_points
         self.frame_skip = frame_skip
         self.theta_increment = 2 * np.pi / num_points  # Increment theta to complete circle in num_points steps
-        self.max_timesteps = 3*int(2 * np.pi / self.theta_increment)  # Calculate max timesteps to complete one circle
+        self.max_timesteps = 2*int(2 * np.pi / self.theta_increment)  # Calculate max timesteps to complete one circle
         self.current_timesteps = 0
         self.w1 = 1.0  
         self.w2 = 0.01

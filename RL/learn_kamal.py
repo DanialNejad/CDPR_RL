@@ -28,6 +28,6 @@ check_env(env)
 model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_cable_control_tensorboard/")
 model.learn(total_timesteps=2000000, log_interval=4) 
             # callback=render_callback)
-model.save("ppo_cable_control_circle100")
-
+model.save("ppo_cable_control_circle50")
+# model.save("ppo_cable_control_end_to_end")
 # %tensorboard --logdir ./ppo_cable_control_tensorboard/ --port 6007

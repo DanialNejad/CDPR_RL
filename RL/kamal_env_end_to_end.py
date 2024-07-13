@@ -51,7 +51,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
         # If the task is done, give an additional reward
         if done:
-            reward += 1000
+            reward += 100
 
         return obs, reward, bool(done), bool(truncated), {}
 

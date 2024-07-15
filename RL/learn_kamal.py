@@ -25,9 +25,10 @@ check_env(env)
 # # Create the vectorized environment
 # env = make_vec_env(lambda: env, n_envs=6)
 # Define and train the model
+model_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/ppo_cable_control_circle50test'
 model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_cable_control_tensorboard/")
-model.learn(total_timesteps=2000000, log_interval=4) 
+model.learn(total_timesteps=1500000, log_interval=4) 
             # callback=render_callback)
-model.save("ppo_cable_control_circle50")
+model.save(model_save_path)
 # model.save("ppo_cable_control_end_to_end")
 # %tensorboard --logdir ./ppo_cable_control_tensorboard/ --port 6007

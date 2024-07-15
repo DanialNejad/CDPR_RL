@@ -32,6 +32,8 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.current_timesteps = 0
         self.w1 = 1.0  
         self.w2 = 0.01
+        self.initial_point = None
+        self.target = None
 
     def _sample_point(self):
         x = np.random.uniform(-0.5, 0.5)
@@ -55,18 +57,17 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
         return obs, reward, bool(done), bool(truncated), {}
 
-    def reset_model(self):
+    def reset_model(self, initial_pos=None, target_pos=None):
         qpos = self.init_qpos.copy()
         qvel = self.init_qvel.copy()
-        print('initial position: ', qpos)
-        # Reset the end effector position and velocity
-        qpos[0] = self.init_qpos[0] + self.np_random.uniform(low=-0.7, high=0.7, size=1)
-        qpos[1] = self.init_qpos[1] + self.np_random.uniform(low=0.3, high=1.3, size=1)
+        
+        if initial_pos is not None:
+            qpos[:len(initial_pos)] = initial_pos
 
         self.set_state(qpos, qvel)
         self.current_timesteps = 0
-        self.initial_point = self._sample_point()
-        self.target = self._sample_point()
+        print('Target Point:', target_pos)
+        self.target = target_pos if target_pos is not None else self._sample_point()
         print('Initial Point:', self.initial_point)
         print('Target Point:', self.target)
         return self._get_obs()
@@ -97,7 +98,8 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         position_error_norm = np.array([position_error_norm])
         velocity_error_norm = np.array([velocity_error_norm])
 
-        observation = np.concatenate([end_effector_pos, end_effector_vel, position_error_norm, velocity_error_norm, tendon1_length, tendon2_length, tendon3_length, self.initial_point, self.target])
+        observation = np.concatenate([end_effector_pos, end_effector_vel, position_error_norm, velocity_error_norm, tendon1_length, tendon2_length, tendon3_length, self.target])
+
         return observation
 
     def _compute_reward(self, obs):

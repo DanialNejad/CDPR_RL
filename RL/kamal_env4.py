@@ -3,6 +3,7 @@ from gymnasium import utils
 from gymnasium.envs.mujoco import MujocoEnv
 from gymnasium.spaces import Box
 import os
+import matplotlib.pyplot as plt
 
 class CableControlEnv(MujocoEnv, utils.EzPickle):
     metadata = {
@@ -14,13 +15,14 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         "render_fps": 100,
     }
 
-    def __init__(self, frame_skip=5, **kwargs):
+    def __init__(self, frame_skip=5, max_timesteps=1000, **kwargs):
         utils.EzPickle.__init__(self, **kwargs)
         xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/assets/Kamal_final_ver2.xml")
         
         observation_space = Box(low=-np.inf, high=np.inf, shape=(8,), dtype=np.float64)
         
         self.frame_skip = frame_skip
+        self.max_timesteps = max_timesteps
         self.w1 = 1.0  
         self.w2 = 0.01
         
@@ -28,7 +30,8 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.C = [0, 1.15]
         self.r = 0.2
         self.phi = 0
-        
+        self.current_timesteps = 0
+        self.const = 5/self.max_timesteps
         MujocoEnv.__init__(
             self,
             xml_path,
@@ -36,8 +39,6 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
             observation_space=observation_space,
             **kwargs
         )
-
-        self.max_time = 3 * 2 * np.pi / (0.7 * (1 - np.tanh(0.6 * 0)))  # Calculate max time to complete one circle
 
     def _sample_target(self):
         return self._target_trajectory()
@@ -49,7 +50,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         return np.array([target_x, target_y, target_z])
 
     def _target_trajectory_velocity(self):
-        dphi = 0.7 * (1 - np.tanh(0.6 * self.data.time))
+        dphi = 0.7 * (1 - np.tanh(0.6 * self.const * self.current_timesteps))
         target_vel_x = self.r * np.cos(self.phi) * dphi
         target_vel_y = 0
         target_vel_z = -self.r * np.sin(self.phi) * dphi
@@ -63,7 +64,8 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         done = self._is_done(obs)
         
         # Update phi for the next step to move along the trajectory
-        self.phi += 0.7 * (1 - np.tanh(0.6 * self.data.time))
+        self.phi += 0.7 * (1 - np.tanh(0.6 * self.const * self.current_timesteps))
+        self.current_timesteps += 1
 
         # Check for truncation conditions
         truncated = self._is_truncated()
@@ -84,6 +86,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
         self.set_state(qpos, qvel)
         self.phi = 0  # Reset phi to start the trajectory from the beginning
+        self.current_timesteps = 0  # Reset the timestep counter
         print('position end effector: ', qpos)        
         return self._get_obs()
 
@@ -132,8 +135,8 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         return False
 
     def _is_truncated(self):
-        # Check if the agent has completed the circle based on simulation time
-        return self.data.time >= self.max_time
+        # Check if the agent has completed the circle based on the time steps
+        return self.current_timesteps >= self.max_timesteps
 
     # def render(self, mode='human'):
     #     if mode == 'rgb_array':

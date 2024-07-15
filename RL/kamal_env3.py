@@ -23,17 +23,18 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.num_points = num_points
         self.frame_skip = frame_skip
         self.theta_increment = 2 * np.pi / num_points  # Increment theta to complete circle in num_points steps
-        self.max_timesteps = 2*int(2 * np.pi / self.theta_increment)  # Calculate max timesteps to complete one circle
+        self.max_timesteps = 2*int(2 * np.pi / self.theta_increment) + 100 # Calculate max timesteps to complete one circle
         self.current_timesteps = 0
         self.w1 = 1.0  
-        self.w2 = 0.01
+        self.w2 = 0.001
         
         # Parameters for circular trajectory
-        self.radius = 0.5
+        self.radius = 0.4
         self.center = np.array([0.0, -0.03, 0.8])
         self.theta = 0
         self.points_reached = 0  # Counter for the number of target points reached
-
+        self.initial_phase_timesteps = 100  # Number of timesteps to reach the initial point
+        self.in_initial_phase = True
         MujocoEnv.__init__(
             self,
             xml_path,
@@ -65,10 +66,15 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         reward = self._compute_reward(obs)
         done = self._is_done(obs)
         
-        # Update theta for the next step to move along the circular trajectory
-        self.theta += self.theta_increment
-        if self.theta >= 2 * np.pi:
-            self.theta -= 2 * np.pi
+        if self.in_initial_phase:
+            if self.current_timesteps >= self.initial_phase_timesteps:
+                self.in_initial_phase = False
+                self.theta = 0
+        else:
+            # Update theta for the next step to move along the circular trajectory
+            self.theta += self.theta_increment
+            if self.theta >= 2 * np.pi:
+                self.theta -= 2 * np.pi
 
         # Check for truncation conditions
         truncated = self._is_truncated()

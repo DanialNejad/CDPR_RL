@@ -11,13 +11,10 @@ model = PPO.load("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/ppo
 
 # Set specific initial and target points for testing
 def test_env(initial_point, target_point):
-    env.initial_point = initial_point
-    env.target = target_point
-
-    # Reset the environment
-    obs, info = env.reset()
+    # Reset the environment with the specified initial and target positions
+    obs = env.reset_model(initial_pos=initial_point, target_pos=target_point)
     if isinstance(obs, tuple):
-        obs = obs[0]  # Extract the observation from the tuple
+        obs = obs[0] 
 
     frames = []
     desired_trajectory = []
@@ -27,7 +24,7 @@ def test_env(initial_point, target_point):
     actuator_actions = []
 
     # Run the model for a number of steps and collect frames
-    for _ in range(1000):
+    for _ in range(500):
         action, _states = model.predict(obs, deterministic=True)
         obs, reward, done, truncated, info = env.step(action)
         if isinstance(obs, tuple):
@@ -75,14 +72,14 @@ def test_env(initial_point, target_point):
     os.makedirs(plot_save_path, exist_ok=True)
 
     # Plotting Trajectory Tracking
-    plt.figure(figsize=(10, 6))
-    plt.plot(desired_trajectory[:, 0], desired_trajectory[:, 2], 'r-', label='Desired Trajectory')
+    plt.plot([initial_point[0], target_point[0]], [initial_point[2], target_point[2]], 'r-', label='Desired Trajectory')
     plt.plot(actual_trajectory[:, 0], actual_trajectory[:, 2], 'b--', label='Actual Trajectory')
     plt.title('Trajectory Tracking')
     plt.xlabel('X Position (m)')
     plt.ylabel('Z Position (m)')
     plt.legend()
     plt.grid()
+    # plt.gca().set_aspect('equal', adjustable='box')  # Make the plot axis square
     plt.savefig(os.path.join(plot_save_path, 'trajectory_tracking2.png'))
     plt.show()
 
@@ -140,7 +137,6 @@ def test_env(initial_point, target_point):
     plt.savefig(os.path.join(plot_save_path, 'end_effector_positions2.png'))
     plt.show()
 
-# Example test with specific initial and target points
-initial_point = np.array([-1.2, -0.03, 1.5])
-target_point = np.array([-0.8, -0.03, 0.4])
+initial_point = np.array([-0.4, 1.2])
+target_point = np.array([0.4, -0.03, 0.6])
 test_env(initial_point, target_point)

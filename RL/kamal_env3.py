@@ -23,18 +23,19 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.num_points = num_points
         self.frame_skip = frame_skip
         self.theta_increment = 2 * np.pi / num_points  # Increment theta to complete circle in num_points steps
-        self.max_timesteps = 2*int(2 * np.pi / self.theta_increment) + 100 # Calculate max timesteps to complete one circle
+        self.max_timesteps = 2 * int(2 * np.pi / self.theta_increment) + 80  # Calculate max timesteps to complete one circle
         self.current_timesteps = 0
         self.w1 = 1.0  
-        self.w2 = 0.001
+        self.w2 = 0.01
         
         # Parameters for circular trajectory
         self.radius = 0.4
         self.center = np.array([0.0, -0.03, 0.8])
         self.theta = 0
         self.points_reached = 0  # Counter for the number of target points reached
-        self.initial_phase_timesteps = 100  # Number of timesteps to reach the initial point
+        self.initial_phase_timesteps = 80  # Number of timesteps to reach the initial point
         self.in_initial_phase = True
+
         MujocoEnv.__init__(
             self,
             xml_path,
@@ -90,14 +91,15 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         qvel = self.init_qvel.copy()
         print('initial position: ', qpos)
         # Reset the end effector position and velocity
-        qpos[0] = self.init_qpos[0]  + self.np_random.uniform(low=-0.7, high=0.7, size=1)
-        qpos[1] = self.init_qpos[1]  + self.np_random.uniform(low=0.3, high=1.3, size=1)
+        qpos[0] = self.init_qpos[0] + self.np_random.uniform(low=-0.7, high=0.7, size=1)
+        qpos[1] = self.init_qpos[1] + self.np_random.uniform(low=0.3, high=1.3, size=1)
 
         self.set_state(qpos, qvel)
         self.current_timesteps = 0
         self.theta = 0  # Reset theta to start the circular trajectory from the beginning
         self.points_reached = 0  # Reset the points reached counter
-        print('position end effector: ', qpos)        
+        self.in_initial_phase = True  # Start in the initial phase
+        print('position end effector: ', qpos)
         return self._get_obs()
 
     def _get_obs(self):
@@ -117,8 +119,12 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         end_effector_pos = np.array([end_effector_pos_x, end_effector_pos_y, end_effector_pos_z]).flatten()
         end_effector_vel = np.array([end_effector_vel_x, end_effector_vel_y, end_effector_vel_z]).flatten()
         
-        self.target = self._target_trajectory(self.theta)
-        self.target_vel = self._target_trajectory_velocity(self.theta)
+        if self.in_initial_phase:
+            self.target = self._target_trajectory(self.theta) 
+            self.target_vel = np.array([0, 0, 0])
+        else:
+            self.target = self._target_trajectory(self.theta)
+            self.target_vel = self._target_trajectory_velocity(self.theta)
         
         position_error = self.target - end_effector_pos
         velocity_error = self.target_vel - end_effector_vel 

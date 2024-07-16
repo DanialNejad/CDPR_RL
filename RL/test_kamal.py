@@ -58,6 +58,7 @@
 
 
 from stable_baselines3 import PPO
+from stable_baselines3 import DDPG
 from kamal_env3 import CableControlEnv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -65,9 +66,9 @@ import cv2
 import os
 
 # Initialize the environment and the model
-model_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/ppo_cable_control_circle50test.zip'
+model_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/DDPG_cable_control_circle50test.zip'
 env = CableControlEnv(render_mode="human")
-model = PPO.load(model_save_path)
+model = DDPG.load(model_save_path)
 
 # Reset the environment
 obs, info = env.reset()
@@ -81,7 +82,7 @@ velocity_errors = []
 actuator_actions = []
 
 # Run the model for a number of steps and collect data
-for _ in range(195):
+for _ in range(175):
     action, _states = model.predict(obs, deterministic=True)
     obs, reward, done, truncated, info = env.step(action)
 

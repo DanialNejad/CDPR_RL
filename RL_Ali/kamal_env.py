@@ -84,17 +84,29 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         return self._get_obs()
 
     def _get_obs(self):
-        # Get the position of the end effector from the 'framepos' sensor
-        end_effector_pos_x = np.array([self.data.sensordata[3]])
-        end_effector_pos_y = np.array([self.data.sensordata[4]])
-        end_effector_pos_z = np.array([self.data.sensordata[5]])
         # Get the lengths of the tendons from the 'tendonpos' sensors
         tendon1_length = np.array([self.data.sensordata[0]])
         tendon2_length = np.array([self.data.sensordata[1]])
         tendon3_length = np.array([self.data.sensordata[2]])
+        # Get the position of the end effector from the 'framepos' sensor
+        end_effector_pos_x = np.array([self.data.sensordata[3]])
+        end_effector_pos_y = np.array([self.data.sensordata[4]])
+        end_effector_pos_z = np.array([self.data.sensordata[5]])
+        # Get the velocity of the end effector from the 'framepos' sensor
+        end_effector_vel_x = np.array([self.data.sensordata[6]])
+        end_effector_vel_y = np.array([self.data.sensordata[7]])
+        end_effector_vel_z = np.array([self.data.sensordata[8]])
+        # Get the acceleration of the end effector from the 'framepos' sensor
+        end_effector_acc_x = np.array([self.data.sensordata[9]])
+        end_effector_acc_y = np.array([self.data.sensordata[10]])
+        end_effector_acc_z = np.array([self.data.sensordata[11]])
+
+        end_effector_pos = np.array([end_effector_pos_x, end_effector_pos_y, end_effector_pos_z]).flatten()
+        end_effector_vel = np.array([end_effector_vel_x, end_effector_vel_y, end_effector_vel_z]).flatten()
+        end_effector_acc = np.array([end_effector_acc_x, end_effector_acc_y, end_effector_acc_z]).flatten()
 
         # Concatenate the necessary components into the observation
-        observation = np.concatenate([end_effector_pos_x, end_effector_pos_y, end_effector_pos_z, self.target, tendon1_length, tendon2_length, tendon3_length])
+        observation = np.concatenate([end_effector_pos,  end_effector_vel, end_effector_acc, self.target, tendon1_length, tendon2_length, tendon3_length])
         # print(observation)
 
         return observation

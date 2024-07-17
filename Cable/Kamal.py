@@ -28,6 +28,10 @@ ee_z = []
 ee_vx = []
 ee_vy = []
 ee_vz = []
+# end effector velocity
+ee_ax = []
+ee_ay = []
+ee_az = []
 # cable length
 l1 = []
 l2 = []
@@ -67,6 +71,10 @@ def controller(model, data):
     ee_vx.append(data.sensordata[6])
     ee_vy.append(data.sensordata[7])
     ee_vz.append(data.sensordata[8])
+
+    ee_ax.append(data.sensordata[9])
+    ee_ay.append(data.sensordata[10])
+    ee_az.append(data.sensordata[11])
 
     # fu1.append(data.sensordata[3])
     # fu2.append(data.sensordata[4])
@@ -226,9 +234,9 @@ while not glfw.window_should_close(window):
         plt.title('End Effector Position')
         plt.plot(ee_x,ee_z)
 
-        plt.figure()
-        plt.title('End Effector Position')
-        plt.plot(ee_y)
+        # plt.figure()
+        # plt.title('End Effector Position')
+        # plt.plot(ee_y)
 
         plt.figure()
         plt.title('End Effector Velocity')
@@ -240,6 +248,19 @@ while not glfw.window_should_close(window):
         plt.ylabel('$V_y$')
         plt.subplot(3,1,3)
         plt.plot(t,ee_vz)
+        plt.ylabel('$V_z$')
+        plt.xlabel('Time (Sec)')
+
+        plt.figure()
+        plt.title('End Effector Acceleration')
+        plt.subplot(3,1,1)
+        plt.plot(t,ee_ax)
+        plt.ylabel('$V_x$')
+        plt.subplot(3,1,2)
+        plt.plot(t,ee_ay)
+        plt.ylabel('$V_y$')
+        plt.subplot(3,1,3)
+        plt.plot(t,ee_az)
         plt.ylabel('$V_z$')
         plt.xlabel('Time (Sec)')
 

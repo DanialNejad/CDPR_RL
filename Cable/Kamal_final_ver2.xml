@@ -125,6 +125,7 @@
         <force site="l1"/>
         <force site="r1"/> -->
         <framelinvel objtype="site" objname="end_pos"/>
+        <framelinacc objtype="site" objname="end_pos"/>
     </sensor>
 
 </mujoco>

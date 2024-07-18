@@ -1,4 +1,5 @@
 from stable_baselines3 import PPO
+from stable_baselines3 import DDPG
 from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 from stable_baselines3.common.env_checker import check_env
 from gymnasium import utils
@@ -12,10 +13,10 @@ env = CableControlEnv(render_mode="rgb_array")
 check_env(env)
 
 # Define the model and training parameters
-model = PPO("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_cable_control_tensorboard/")
+model = DDPG("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_cable_control_tensorboard/")
 
 # Train the model
-model.learn(total_timesteps=1000000)
+model.learn(total_timesteps=150000)
 
 # Save the trained model
-model.save("ppo_cable_control_end_to_endnew")
+model.save("DDPG_cable_control_end_to_endnew")

@@ -14,7 +14,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         "render_fps": 100,
     }
 
-    def __init__(self, max_timesteps=1000, **kwargs):
+    def __init__(self, max_timesteps=500, **kwargs):
         utils.EzPickle.__init__(self, **kwargs)
         xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/assets/Kamal_final_ver2.xml")
         
@@ -63,7 +63,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         qvel = self.init_qvel.copy()
         
         if initial_pos is not None:
-            qpos[:3] = initial_pos  # Ensure the correct shape assignment
+            qpos[:2] = initial_pos  # Ensure the correct shape assignment
         else:
             qpos[0] = self.init_qpos[0] + self.np_random.uniform(low=-0.7, high=0.7, size=1)
             qpos[1] = self.init_qpos[1] + self.np_random.uniform(low=0.3, high=1.3, size=1)
@@ -113,4 +113,6 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
     def _is_done(self, obs):
         distance = np.linalg.norm(obs[:3] - self.target)
-        return distance < 0.005
+        velocity_error = obs[7] 
+
+        return distance < 0.0005 and velocity_error < 0.1

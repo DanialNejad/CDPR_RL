@@ -1,5 +1,6 @@
 import os
 from stable_baselines3 import PPO
+from stable_baselines3 import DDPG
 from kamal_env_end_to_end import CableControlEnv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,7 +8,7 @@ import cv2
 
 # Initialize the environment and the model
 env = CableControlEnv(render_mode="human")
-model = PPO.load("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/ppo_cable_control_end_to_endnew.zip")
+model = DDPG.load("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/DDPG_cable_control_end_to_endnew.zip")
 
 # Set specific initial and target points for testing
 def test_env(model, initial_point, target_point):
@@ -22,7 +23,7 @@ def test_env(model, initial_point, target_point):
     actuator_actions = []
 
     # Run the model for a number of steps and collect frames
-    for _ in range(1000):
+    for _ in range(200):
         action, _states = model.predict(obs, deterministic=True)
         obs, reward, done, truncated, info = env.step(action)
         env.render()
@@ -60,7 +61,7 @@ def test_env(model, initial_point, target_point):
     os.makedirs(plot_save_path, exist_ok=True)
 
     # Plotting Trajectory Tracking
-    plt.plot([initial_point[0], target_point[0]], [initial_point[2], target_point[2]], 'r-', label='Desired Trajectory')
+    plt.plot([initial_point[0], target_point[0]], [initial_point[1], target_point[2]], 'r-', label='Desired Trajectory')
     plt.plot(actual_trajectory[:, 0], actual_trajectory[:, 2], 'b--', label='Actual Trajectory')
     plt.title('Trajectory Tracking')
     plt.xlabel('X Position (m)')
@@ -123,10 +124,9 @@ def test_env(model, initial_point, target_point):
     plt.grid()
     plt.savefig(os.path.join(plot_save_path, 'end_effector_positions2.png'))
     plt.show()
-
 # Define specific initial and target points for testing
-initial_point = np.array([0.0, 0.5])
-target_point = np.array([0.3, -0.03, 1.0])
+initial_point = np.array([0.3, 0.7])
+target_point = np.array([-0.4, -0.03, 1.2])
 
 # Test the model with the specified points
 test_env(model, initial_point, target_point)

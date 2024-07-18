@@ -126,7 +126,7 @@ def test_env(model, initial_point, target_point):
     plt.show()
 # Define specific initial and target points for testing
 initial_point = np.array([0.3, 0.7])
-target_point = np.array([-0.4, -0.03, 1.2])
+target_point = np.array([0.4, -0.03, 1.2])
 
 # Test the model with the specified points
 test_env(model, initial_point, target_point)

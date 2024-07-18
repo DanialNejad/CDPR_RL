@@ -14,7 +14,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         "render_fps": 100,
     }
 
-    def __init__(self, num_points=100, frame_skip=5, **kwargs):
+    def __init__(self, num_points=50, frame_skip=5, **kwargs):
         utils.EzPickle.__init__(self, **kwargs)
         xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/assets/Kamal_final_ver2.xml")
         
@@ -147,7 +147,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
     def _is_done(self, obs):
         distance = np.linalg.norm(obs[:3] - self.target)
-        if distance < 0.005:  # Threshold for reaching a target point
+        if distance < 0.0005:  # Threshold for reaching a target point
             self.points_reached += 1
         # Done if all points in the trajectory have been reached
         return self.points_reached >= self.num_points

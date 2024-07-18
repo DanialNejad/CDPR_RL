@@ -18,7 +18,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         utils.EzPickle.__init__(self, **kwargs)
         xml_path = os.path.abspath("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/assets/Kamal_final_ver2.xml")
         
-        observation_space = Box(low=-np.inf, high=np.inf, shape=(17,), dtype=np.float64)
+        observation_space = Box(low=-np.inf, high=np.inf, shape=(14,), dtype=np.float64)
         
         MujocoEnv.__init__(
             self,
@@ -54,6 +54,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         # If the task is done, give an additional reward
         if done:
             reward += 100
+            self.target = self._sample_point()  # Sample a new target point
 
         return obs, reward, bool(done), bool(truncated), {}
 
@@ -62,13 +63,15 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         qvel = self.init_qvel.copy()
         
         if initial_pos is not None:
-            qpos[:len(initial_pos)] = initial_pos
+            qpos[:3] = initial_pos  # Ensure the correct shape assignment
+        else:
+            qpos[0] = self.init_qpos[0] + self.np_random.uniform(low=-0.7, high=0.7, size=1)
+            qpos[1] = self.init_qpos[1] + self.np_random.uniform(low=0.3, high=1.3, size=1)
 
         self.set_state(qpos, qvel)
         self.current_timesteps = 0
-        print('Target Point:', target_pos)
         self.target = target_pos if target_pos is not None else self._sample_point()
-        print('Initial Point:', self.initial_point)
+        print('Initial Point:', initial_pos)
         print('Target Point:', self.target)
         return self._get_obs()
 
@@ -111,13 +114,3 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
     def _is_done(self, obs):
         distance = np.linalg.norm(obs[:3] - self.target)
         return distance < 0.005
-
-    # def render(self, mode='human'):
-    #     if mode == 'rgb_array':
-    #         self.viewer.cam.lookat[0] = 0  
-    #         self.viewer.cam.lookat[1] = -2
-    #         self.viewer.cam.lookat[2] = 0
-    #         self.viewer.cam.distance = 6
-    #         self.viewer.cam.elevation = -25
-    #         self.viewer.cam.azimuth = -90
-    #     return super().render(mode=mode)

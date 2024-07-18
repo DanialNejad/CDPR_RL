@@ -59,17 +59,18 @@
 
 from stable_baselines3 import PPO
 from stable_baselines3 import DDPG
-from kamal_env3 import CableControlEnv
+# from kamal_env3 import CableControlEnv
+from kamal_env_ppo import CableControlEnv
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
 
 # Initialize the environment and the model
-model_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/DDPG_cable_control_circle50test.zip'
+model_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/PPO_cable_control_circle50new.zip'
 env = CableControlEnv(render_mode="human")
-model = DDPG.load(model_save_path)
-
+# model = DDPG.load(model_save_path)
+model = PPO.load(model_save_path)
 # Reset the environment
 obs, info = env.reset()
 
@@ -80,9 +81,11 @@ actual_trajectory = []
 position_errors = []
 velocity_errors = []
 actuator_actions = []
+tendon_lengths = []
 
 # Run the model for a number of steps and collect data
-for _ in range(175):
+# for _ in range(275):
+for _ in range(175):    
     action, _states = model.predict(obs, deterministic=True)
     obs, reward, done, truncated, info = env.step(action)
 
@@ -91,6 +94,7 @@ for _ in range(175):
     end_effector_vel = obs[3:6]
     position_error = obs[6]
     velocity_error = obs[7]
+    tendon_len = obs[8:11]
     desired_pos = env.target
 
     desired_trajectory.append(desired_pos)
@@ -98,6 +102,7 @@ for _ in range(175):
     position_errors.append(position_error)
     velocity_errors.append(velocity_error)
     actuator_actions.append(action)
+    tendon_lengths.append(tendon_len)
 
     # Render the environment and store the frame
     image = env.render()
@@ -112,7 +117,7 @@ actual_trajectory = np.array(actual_trajectory)
 position_errors = np.array(position_errors)
 velocity_errors = np.array(velocity_errors)
 actuator_actions = np.array(actuator_actions)
-
+tendon_lengths = np.array(tendon_lengths)
 
 # Define the directory to save the plots
 plot_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Results'
@@ -168,6 +173,18 @@ plt.ylabel('Action')
 plt.legend()
 plt.grid()
 plt.savefig(os.path.join(plot_save_path,'actuator_actions1.png'))
+plt.show()
+
+plt.figure(figsize=(10, 6))
+plt.plot(time_steps, tendon_lengths[:, 0], label='Tendon1')
+plt.plot(time_steps, tendon_lengths[:, 1], label='Tendon2')
+plt.plot(time_steps, tendon_lengths[:, 2], label='Tendon3')
+plt.title('Tendons length')
+plt.xlabel('Time Steps')
+plt.ylabel('Length (m)')
+plt.legend()
+plt.grid()
+plt.savefig(os.path.join(plot_save_path,'tendon_length1.png'))
 plt.show()
 
 # Plotting Individual End-Effector Positions with Desired Positions

@@ -7,14 +7,12 @@ import cv2
 
 # Initialize the environment and the model
 env = CableControlEnv(render_mode="human")
-model = PPO.load("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/ppo_cable_control_end_to_end.zip")
+model = PPO.load("/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/ppo_cable_control_end_to_endnew.zip")
 
 # Set specific initial and target points for testing
-def test_env(initial_point, target_point):
-    # Reset the environment with the specified initial and target positions
+def test_env(model, initial_point, target_point):
+    env = CableControlEnv(render_mode="human")
     obs = env.reset_model(initial_pos=initial_point, target_pos=target_point)
-    if isinstance(obs, tuple):
-        obs = obs[0] 
 
     frames = []
     desired_trajectory = []
@@ -24,11 +22,12 @@ def test_env(initial_point, target_point):
     actuator_actions = []
 
     # Run the model for a number of steps and collect frames
-    for _ in range(500):
+    for _ in range(1000):
         action, _states = model.predict(obs, deterministic=True)
         obs, reward, done, truncated, info = env.step(action)
-        if isinstance(obs, tuple):
-            obs = obs[0]  # Extract the observation from the tuple
+        env.render()
+        if done or truncated:
+            break
 
         # Collect data
         end_effector_pos = obs[:3]
@@ -49,17 +48,6 @@ def test_env(initial_point, target_point):
         if done or truncated:
             break
 
-    # # Save the frames as a video
-    # video_filename = 'ppo_cable_control_test.mp4'
-    # height, width, layers = frames[0].shape
-    # video = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width, height))
-
-    # for frame in frames:
-    #     video.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
-
-    # video.release()
-    # print(f'Video saved as {video_filename}')
-
     # Convert lists to numpy arrays
     desired_trajectory = np.array(desired_trajectory)
     actual_trajectory = np.array(actual_trajectory)
@@ -79,7 +67,6 @@ def test_env(initial_point, target_point):
     plt.ylabel('Z Position (m)')
     plt.legend()
     plt.grid()
-    # plt.gca().set_aspect('equal', adjustable='box')  # Make the plot axis square
     plt.savefig(os.path.join(plot_save_path, 'trajectory_tracking2.png'))
     plt.show()
 
@@ -137,6 +124,9 @@ def test_env(initial_point, target_point):
     plt.savefig(os.path.join(plot_save_path, 'end_effector_positions2.png'))
     plt.show()
 
-initial_point = np.array([-0.4, 1.2])
-target_point = np.array([0.4, -0.03, 0.6])
-test_env(initial_point, target_point)
+# Define specific initial and target points for testing
+initial_point = np.array([0.0, 0.5])
+target_point = np.array([0.3, -0.03, 1.0])
+
+# Test the model with the specified points
+test_env(model, initial_point, target_point)

@@ -1,76 +1,17 @@
-# from stable_baselines3 import PPO
-# from kamal_env import CableControlEnv
-# import cv2
-# import imageio
-
-# env = CableControlEnv(render_mode="rgb_array")
-# model = PPO.load("ppo_cable_control.zip")
-
-# obs, info = env.reset()
-# frames = []
-# for _ in range(500):
-#     action, _states = model.predict(obs, deterministic=True)
-#     obs, reward, done, truncated, info = env.step(action)
-
-#     image = env.render()
-#     if _ % 5 == 0:
-#         frames.append(image)
-#     if done or truncated:
-#         obs, info = env.reset()
-
-# print('observe: ' , obs)
-# imageio.mimsave('ppo_cable_control.gif', frames, fps=120)
-
-# from stable_baselines3 import PPO
-# from kamal_env3 import CableControlEnv
-# import cv2
-# import imageio
-
-# # Initialize the environment and the model
-# env = CableControlEnv(render_mode="human")
-# model = PPO.load("ppo_cable_control_circle200.zip")
-
-# # Reset the environment
-# obs, info = env.reset()
-# frames = []
-
-# # Run the model for a number of steps and collect frames
-# for _ in range(1000):
-#     action, _states = model.predict(obs, deterministic=True)
-#     obs, reward, done, truncated, info = env.step(action)
-
-#     # Render the environment and store the frame
-#     image = env.render()
-#     frames.append(image)
-#     if done or truncated:
-#         obs, info = env.reset()
-
-# # Save the frames as a video
-# video_filename = 'ppo_cable_control5.mp4'
-# height, width, layers = frames[0].shape
-# video = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width, height))
-
-# for frame in frames:
-#     video.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
-
-# video.release()
-# print(f'Video saved as {video_filename}')
-
-
 from stable_baselines3 import PPO
 from stable_baselines3 import DDPG
-# from kamal_env3 import CableControlEnv
-from kamal_env_ppo import CableControlEnv
+from kamal_env3 import CableControlEnv
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import os
+from sklearn.metrics import mean_squared_error
 
 # Initialize the environment and the model
-model_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/PPO_cable_control_circle50new.zip'
-env = CableControlEnv(render_mode="human")
-# model = DDPG.load(model_save_path)
-model = PPO.load(model_save_path)
+model_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Models/DDPG_cable_control_circle100_shanbe_1.zip'
+env = CableControlEnv(render_mode="rgb_array")
+model = DDPG.load(model_save_path)
+# model = PPO.load(model_save_path)
 # Reset the environment
 obs, info = env.reset()
 
@@ -82,10 +23,11 @@ position_errors = []
 velocity_errors = []
 actuator_actions = []
 tendon_lengths = []
+desired_velocities = []
+actual_velocities = []
 
 # Run the model for a number of steps and collect data
-# for _ in range(275):
-for _ in range(175):    
+for _ in range(195):
     action, _states = model.predict(obs, deterministic=True)
     obs, reward, done, truncated, info = env.step(action)
 
@@ -103,6 +45,8 @@ for _ in range(175):
     velocity_errors.append(velocity_error)
     actuator_actions.append(action)
     tendon_lengths.append(tendon_len)
+    desired_velocities.append(env.target_vel)
+    actual_velocities.append(end_effector_vel)
 
     # Render the environment and store the frame
     image = env.render()
@@ -110,6 +54,16 @@ for _ in range(175):
     if done or truncated:
         obs, info = env.reset()
 
+# Save the frames as a video
+video_filename = 'DDPG_cable_control_test3.mp4'
+height, width, layers = frames[0].shape
+video = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*'mp4v'), 30, (width, height))
+
+for frame in frames:
+    video.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+
+video.release()
+print(f'Video saved as {video_filename}')
 
 # Convert lists to numpy arrays
 desired_trajectory = np.array(desired_trajectory)
@@ -118,6 +72,14 @@ position_errors = np.array(position_errors)
 velocity_errors = np.array(velocity_errors)
 actuator_actions = np.array(actuator_actions)
 tendon_lengths = np.array(tendon_lengths)
+desired_velocities = np.array(desired_velocities)
+actual_velocities = np.array(actual_velocities)
+
+# Calculate RMSE for position and velocity
+position_rmse = np.sqrt(mean_squared_error(desired_trajectory[:, :2], actual_trajectory[:, :2]))
+velocity_rmse = np.sqrt(mean_squared_error(desired_velocities[:, :2], actual_velocities[:, :2]))
+print(f'Position RMSE: {position_rmse}')
+print(f'Velocity RMSE: {velocity_rmse}')
 
 # Define the directory to save the plots
 plot_save_path = '/media/danial/8034D28D34D28596/Projects/Kamal_RL/RL/Results'
@@ -133,7 +95,7 @@ plt.ylabel('Z Position (m)')
 plt.gca().set_aspect('equal', adjustable='box') 
 plt.legend()
 plt.grid()
-plt.savefig(os.path.join(plot_save_path, 'trajectory_tracking1.png'))
+plt.savefig(os.path.join(plot_save_path, 'trajectory_tracking7.png'))
 plt.show()
 
 # Plotting Position Errors
@@ -146,7 +108,7 @@ plt.xlabel('Time Steps')
 plt.ylabel('Error')
 plt.legend()
 plt.grid()
-plt.savefig(os.path.join(plot_save_path,'position_errors1.png'))
+plt.savefig(os.path.join(plot_save_path,'position_errors7.png'))
 plt.show()
 
 # Plotting Velocity Errors
@@ -159,9 +121,8 @@ plt.xlabel('Time Steps')
 plt.ylabel('Error')
 plt.legend()
 plt.grid()
-plt.savefig(os.path.join(plot_save_path,'velocity_errors1.png'))
+plt.savefig(os.path.join(plot_save_path,'velocity_errors7.png'))
 plt.show()
-
 
 # Plotting Actuator Actions
 plt.figure(figsize=(10, 6))
@@ -172,9 +133,10 @@ plt.xlabel('Time Steps')
 plt.ylabel('Action')
 plt.legend()
 plt.grid()
-plt.savefig(os.path.join(plot_save_path,'actuator_actions1.png'))
+plt.savefig(os.path.join(plot_save_path,'actuator_actions7.png'))
 plt.show()
 
+# Plotting Tendon Lengths
 plt.figure(figsize=(10, 6))
 plt.plot(time_steps, tendon_lengths[:, 0], label='Tendon1')
 plt.plot(time_steps, tendon_lengths[:, 1], label='Tendon2')
@@ -184,7 +146,7 @@ plt.xlabel('Time Steps')
 plt.ylabel('Length (m)')
 plt.legend()
 plt.grid()
-plt.savefig(os.path.join(plot_save_path,'tendon_length1.png'))
+plt.savefig(os.path.join(plot_save_path,'tendon_length7.png'))
 plt.show()
 
 # Plotting Individual End-Effector Positions with Desired Positions
@@ -200,6 +162,42 @@ plt.xlabel('Time Steps')
 plt.ylabel('Position (m)')
 plt.legend()
 plt.grid()
-plt.savefig(os.path.join(plot_save_path,'end_effector_positions1.png'))
+plt.savefig(os.path.join(plot_save_path,'end_effector_positions7.png'))
 plt.show()
 
+# Plotting Desired and Actual Velocities
+plt.figure(figsize=(10, 6))
+plt.plot(time_steps, desired_velocities[:, 0], '--', label='Desired X Velocity')
+plt.plot(time_steps, desired_velocities[:, 1], '--', label='Desired Y Velocity')
+plt.plot(time_steps, desired_velocities[:, 2], '--', label='Desired Z Velocity')
+plt.plot(time_steps, actual_velocities[:, 0], label='Actual X Velocity')
+plt.plot(time_steps, actual_velocities[:, 1], label='Actual Y Velocity')
+plt.plot(time_steps, actual_velocities[:, 2], label='Actual Z Velocity')
+plt.title('Desired and Actual Velocities Over Time')
+plt.xlabel('Time Steps')
+plt.ylabel('Velocity (m/s)')
+plt.legend()
+plt.grid()
+plt.savefig(os.path.join(plot_save_path,'desired_actual_velocities2.png'))
+plt.show()
+
+position_errors = np.array(position_errors)
+velocity_errors = np.array(velocity_errors)
+
+# Calculate statistical metrics for position errors
+mean_position_error = np.mean(position_errors)
+variance_position_error = np.var(position_errors)
+std_dev_position_error = np.std(position_errors)
+
+# Calculate statistical metrics for velocity errors
+mean_velocity_error = np.mean(velocity_errors)
+variance_velocity_error = np.var(velocity_errors)
+std_dev_velocity_error = np.std(velocity_errors)
+
+print("Mean Position Error:", mean_position_error)
+print("Variance Position Error:", variance_position_error)
+print("Standard Deviation Position Error:", std_dev_position_error)
+
+print("Mean Velocity Error:", mean_velocity_error)
+print("Variance Velocity Error:", variance_velocity_error)
+print("Standard Deviation Velocity Error:", std_dev_velocity_error)

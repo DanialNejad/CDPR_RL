@@ -115,4 +115,4 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         distance = np.linalg.norm(obs[:3] - self.target)
         velocity_error = obs[7] 
 
-        return distance < 0.0005 and velocity_error < 0.1
+        return distance < 0.0005 

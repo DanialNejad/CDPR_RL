@@ -23,7 +23,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.num_points = num_points
         self.frame_skip = frame_skip
         self.theta_increment = 2 * np.pi / num_points  # Increment theta to complete circle in num_points steps
-        self.max_timesteps = 2 * int(2 * np.pi / self.theta_increment) + 80 # Calculate max timesteps to complete one circle
+        self.max_timesteps = 2 * int(2 * np.pi / self.theta_increment) + 100 # Calculate max timesteps to complete one circle
         self.current_timesteps = 0
         self.w1 = 1.0  
         self.w2 = 0.01
@@ -73,10 +73,19 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
                 self.theta = 0
         else:
             # Update theta for the next step to move along the circular trajectory
-            self.theta += self.theta_increment
-            # if self.theta >= 2 * np.pi:
-            #     self.theta -= 2 * np.pi
+            if self.theta >= 4 * np.pi:
+                self.theta = 4 * np.pi  # Keep theta at 4 * pi to stay at the last point
+            else:
+                self.theta += self.theta_increment   
+            # Ensure the robot stays at the last point once the trajectory is complete
+            if self.theta == 4 * np.pi:
+                self.target = self._target_trajectory(self.theta)
+                self.target_vel = np.zeros(3)  # Set target velocity to zero to keep the robot stationary
+            else:
+                self.target = self._target_trajectory(self.theta)
+                self.target_vel = self._target_trajectory_velocity(self.theta)
 
+        print(self.theta)
         # Check for truncation conditions
         truncated = self._is_truncated()
 
@@ -147,7 +156,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
     def _is_done(self, obs):
         distance = np.linalg.norm(obs[:3] - self.target)
-        if distance < 0.0005:  # Threshold for reaching a target point
+        if distance < 0.005:  # Threshold for reaching a target point
             self.points_reached += 1
         # Done if all points in the trajectory have been reached
         return self.points_reached >= self.num_points
@@ -155,13 +164,3 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
     def _is_truncated(self):
         # Check if the agent has completed the circle
         return self.current_timesteps >= self.max_timesteps
-
-    # def render(self, mode='human'):
-    #     if mode == 'rgb_array':
-    #         self.viewer.cam.lookat[0] = 0  
-    #         self.viewer.cam.lookat[1] = -2
-    #         self.viewer.cam.lookat[2] = 0
-    #         self.viewer.cam.distance = 6
-    #         self.viewer.cam.elevation = -25
-    #         self.viewer.cam.azimuth = -90
-    #     return super().render(mode=mode)

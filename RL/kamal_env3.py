@@ -23,7 +23,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.num_points = num_points
         self.frame_skip = frame_skip
         self.theta_increment = 2 * np.pi / num_points  # Increment theta to complete circle in num_points steps
-        self.max_timesteps = 2 * int(2 * np.pi / self.theta_increment) + 80 # Calculate max timesteps to complete one circle
+        self.max_timesteps = 2 * int(2 * np.pi / self.theta_increment) + 0 # Calculate max timesteps to complete one circle #100
         self.current_timesteps = 0
         self.w1 = 1.0  
         self.w2 = 0.01
@@ -33,7 +33,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         self.center = np.array([0.0, -0.03, 0.8])
         self.theta = 0
         self.points_reached = 0  # Counter for the number of target points reached
-        self.initial_phase_timesteps = 80  # Number of timesteps to reach the initial point
+        self.initial_phase_timesteps = 0  # Number of timesteps to reach the initial point #60
         self.in_initial_phase = True
 
         MujocoEnv.__init__(
@@ -71,11 +71,20 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
             if self.current_timesteps >= self.initial_phase_timesteps:
                 self.in_initial_phase = False
                 self.theta = 0
+        # else:
+        #     # Update theta for the next step to move along the circular trajectory
+        #     if self.theta >= 4 * np.pi:
+        #         self.theta = 4 * np.pi  # Keep theta at 4 * pi to stay at the last point
         else:
-            # Update theta for the next step to move along the circular trajectory
-            self.theta += self.theta_increment
-            # if self.theta >= 2 * np.pi:
-            #     self.theta -= 2 * np.pi
+            self.theta += self.theta_increment   
+            # # Ensure the robot stays at the last point once the trajectory is complete
+            # if self.theta == 4 * np.pi:
+            #     self.target = self._target_trajectory(self.theta)
+            #     self.target_vel = np.zeros(3)  # Set target velocity to zero to keep the robot stationary
+            # else:
+            #     self.target = self._target_trajectory(self.theta)
+            #     self.target_vel = self._target_trajectory_velocity(self.theta)
+
 
         # Check for truncation conditions
         truncated = self._is_truncated()
@@ -85,6 +94,7 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
             reward += 100
 
         return obs, reward, bool(done), bool(truncated), {}
+
 
     def reset_model(self):
         qpos = self.init_qpos.copy()
@@ -147,7 +157,8 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
 
     def _is_done(self, obs):
         distance = np.linalg.norm(obs[:3] - self.target)
-        if distance < 0.005:  # Threshold for reaching a target point
+        # velocity_error = obs[7] 
+        if distance < 0.005: # Threshold for reaching a target point
             self.points_reached += 1
         # Done if all points in the trajectory have been reached
         return self.points_reached >= self.num_points
@@ -156,12 +167,4 @@ class CableControlEnv(MujocoEnv, utils.EzPickle):
         # Check if the agent has completed the circle
         return self.current_timesteps >= self.max_timesteps
 
-    # def render(self, mode='human'):
-    #     if mode == 'rgb_array':
-    #         self.viewer.cam.lookat[0] = 0  
-    #         self.viewer.cam.lookat[1] = -2
-    #         self.viewer.cam.lookat[2] = 0
-    #         self.viewer.cam.distance = 6
-    #         self.viewer.cam.elevation = -25
-    #         self.viewer.cam.azimuth = -90
-    #     return super().render(mode=mode)
+

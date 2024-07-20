@@ -16,7 +16,7 @@ check_env(env)
 model = DDPG("MlpPolicy", env, verbose=1, tensorboard_log="./ppo_cable_control_tensorboard/")
 
 # Train the model
-model.learn(total_timesteps=150000)
+model.learn(total_timesteps=400000)
 
 # Save the trained model
 model.save("DDPG_cable_control_end_to_endnew")

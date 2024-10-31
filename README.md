@@ -65,7 +65,7 @@ The project provides comprehensive results including:
 
 ![Trajectory Tracking](DDPG_cable_control_testpaper4_run_57.mp4)
 ![Position Errors](ppo_cable_control_test.mp4)
-![Velocity Errors](results/velocity_errors.png)
+![Velocity Errors](RL/screenshot.png)
 
 ## Future Work
 Future improvements to this project include:

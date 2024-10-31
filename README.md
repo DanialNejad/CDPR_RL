@@ -63,9 +63,9 @@ The project provides comprehensive results including:
 - Position and velocity errors.
 - Actuator actions over time.
 
-![Trajectory Tracking](DDPG_cable_control_testpaper4_run_57.mp4)
-![Position Errors](ppo_cable_control_test.mp4)
-![Velocity Errors](RL/screenshot.png)
+![Trajectory Tracking1](ddpg_cable_control.gif)
+![Trajectory Tracking2](DDPG_cable_control.gif)
+
 
 ## Future Work
 Future improvements to this project include:
